@@ -19,6 +19,17 @@ ROOT = HERE.parent.parent
 CLASSES = {"0": "pallet_region", "1": "bag"}
 
 
+def canonical(box):
+    """Một hình chữ nhật có nhiều cách ghi (30° = 210°, hoặc 120° với w/h đổi chỗ).
+    Quy ước duy nhất (long-edge, như MMRotate le90): w là cạnh dài, góc của cạnh dài
+    trong [-90°, 90°), đo theo chiều kim đồng hồ trên ảnh (trục y hướng xuống)."""
+    w, h, angle = box["w"], box["h"], box["angle"]
+    if w < h:
+        w, h, angle = h, w, angle + 90
+    angle = (angle + 90) % 180 - 90
+    return {**box, "w": w, "h": h, "angle": round(angle, 6)}
+
+
 def corners(box):
     angle = math.radians(box["angle"])
     c, s = math.cos(angle), math.sin(angle)
@@ -53,7 +64,7 @@ def validate(body, image):
         if parent is not None and type(parent) is not int:
             raise ValueError("Pallet liên kết không hợp lệ.")
         ids.add(box["id"])
-        item = {"id": box["id"], "class_id": box["class_id"], **geometry,
+        item = {"id": box["id"], "class_id": box["class_id"], **canonical(geometry),
                 "parent_id": parent if box["class_id"] == 1 else None,
                 "target": bool(box.get("target", False)) if box["class_id"] == 0 else False,
                 "occluded": bool(box.get("occluded", False)), "truncated": bool(box.get("truncated", False))}

@@ -72,6 +72,9 @@ Kết quả trong `code/obb_labeler/results.nosync/`:
 
 - `annotations.json`: bản gốc, nháp và nhãn đã kiểm tra; lưu tâm, kích thước,
   góc, bốn góc theo pixel gốc, lớp, liên kết pallet, cờ mục tiêu và che khuất.
+  Khi lưu, box được chuẩn hóa về một dạng duy nhất (hình không đổi): `w` là cạnh
+  dài, `angle` là hướng cạnh dài trong [-90°, 90°). Vì vậy khi mở lại ảnh, ô góc
+  có thể khác số đã nhập (vd 120° với w<h thành 30° với w, h đổi chỗ).
 - `manifest.csv`: đường dẫn RGB/depth, kích thước, nhóm chuỗi, số đối tượng,
   trạng thái đã kiểm tra và ghi chú.
 - `yolo/labels/<id>.txt`: chỉ ảnh đã kiểm tra; mỗi dòng

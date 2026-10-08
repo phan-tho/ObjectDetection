@@ -2,3 +2,15 @@ img.nosync
 bao-tai.nosync
 annotations.nosync
 2026-09-11.nosync
+
+# Dữ liệu tải từ Kaggle, file nén
+*.zip
+_download_*/
+
+# Môi trường + output train/augment
+.venv/
+datasets.nosync/
+runs.nosync/
+*.pt
+*.onnx
+__pycache__/
