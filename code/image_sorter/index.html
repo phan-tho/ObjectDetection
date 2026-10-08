@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phân loại ảnh pallet</title>
+<style>
+  :root { color-scheme: dark; font: 14px/1.45 system-ui, sans-serif; color: #e8edf2; background: #11151b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  button, select, textarea { font: inherit; color: inherit; }
+  button, select { background: #222a35; border: 1px solid #394556; border-radius: 7px; padding: 9px 11px; cursor: pointer; }
+  button:hover { background: #303c4c; }
+  button:disabled { opacity: .45; cursor: default; }
+  button.active { background: #153c37; border-color: #5bd2b3; color: #b4f5df; }
+  button:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #5bd2b3; outline-offset: 2px; }
+  kbd { font: 12px ui-monospace, monospace; border: 1px solid #526071; border-radius: 4px; padding: 1px 5px; margin-right: 7px; color: #ccd6e1; }
+  header { padding: 14px 20px; border-bottom: 1px solid #303946; display: flex; align-items: center; gap: 18px; }
+  h1 { margin: 0; font-size: 19px; }
+  .muted { color: #9cabbc; font-size: 12px; }
+  #progress { margin-left: auto; }
+  progress { width: 110px; height: 7px; accent-color: #5bd2b3; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; }
+  .viewer { padding: 16px 20px; min-width: 0; }
+  .image-box { height: calc(100vh - 210px); min-height: 310px; background: #080b10; border: 1px solid #303946; border-radius: 9px; overflow: auto; display: flex; align-items: center; justify-content: center; }
+  #photo { display: block; max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
+  .image-box.zoomed { display: block; }
+  .image-box.zoomed #photo { max-width: none; max-height: none; cursor: zoom-out; }
+  .image-box.failed { color: #ffb5ae; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .frame-bar { margin: 10px 0; justify-content: space-between; }
+  #image-path { overflow-wrap: anywhere; margin-top: 5px; }
+  aside { padding: 16px; border-left: 1px solid #303946; max-height: calc(100vh - 65px); overflow: auto; }
+  .label { margin: 0 0 7px; font-size: 13px; font-weight: 650; color: #c4cfdb; }
+  .section { margin-bottom: 15px; }
+  .choices { display: grid; gap: 5px; }
+  .choices button { text-align: left; padding: 7px 10px; }
+  .status button { flex: 1; padding: 7px 5px; font-size: 12px; }
+  .status kbd { margin-right: 4px; }
+  textarea { width: 100%; padding: 8px; border: 1px solid #394556; border-radius: 7px; background: #171e27; resize: vertical; }
+  #reason { width: 100%; margin-top: 8px; font-size: 12px; }
+  #save-next { background: #50c5a5; border-color: #50c5a5; color: #07281f; font-weight: 650; flex: 1; }
+  #message { min-height: 22px; margin: 8px 0; color: #85e0c4; }
+  #message.error { color: #ffb5ae; }
+  a { color: #8adfc7; }
+  details { margin-top: 10px; border-top: 1px solid #303946; padding-top: 12px; }
+  summary { cursor: pointer; }
+  #stats { display: grid; grid-template-columns: 1fr auto; gap: 5px 15px; margin-top: 12px; font-size: 12px; }
+  #output { overflow-wrap: anywhere; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } aside { max-height: none; border-left: 0; } .image-box { height: 55vh; } header { flex-wrap: wrap; } }
+</style>
+<header>
+  <div><h1>Phân loại ảnh pallet</h1><div class="muted">Một lượt chụp · nhiều nhãn · lưu trên máy</div></div>
+  <div id="progress">Đang tải…</div>
+  <button id="unreviewed">Tới lượt chưa phân loại</button>
+</header>
+<main>
+  <section class="viewer">
+    <div class="row" style="justify-content:space-between; margin-bottom:10px">
+      <strong id="group-name"></strong><span id="position" class="muted"></span>
+    </div>
+    <div class="image-box" id="image-box"><img id="photo" alt="Ảnh pallet đang phân loại"></div>
+    <div class="row frame-bar">
+      <div class="row"><button id="frame-prev"><kbd>[</kbd>Frame trước</button><span id="frame-info" class="muted"></span><button id="frame-next">Frame sau <kbd>]</kbd></button></div>
+      <span class="muted">Bấm ảnh để xem kích thước gốc</span>
+    </div>
+    <div id="image-path" class="muted"></div>
+    <div id="metadata" class="muted"></div>
+  </section>
+  <aside>
+    <div class="section"><div class="label">Khả năng sử dụng</div>
+      <div class="row status" id="statuses">
+        <button data-status="usable"><kbd>D</kbd>Dùng được</button>
+        <button data-status="rejected"><kbd>X</kbd>Loại</button>
+        <button data-status="review"><kbd>C</kbd>Xem lại</button>
+      </div>
+      <select id="reason" aria-label="Lý do loại ảnh" hidden></select>
+    </div>
+    <div class="section"><div class="label">Trạng thái pallet — chọn một</div><div class="choices" id="states"></div></div>
+    <div class="section"><div class="label">Đặc điểm — chọn nhiều, hoặc không chọn</div><div class="choices" id="tags"></div></div>
+    <div class="section"><label class="label" for="note">Ghi chú (không bắt buộc)</label><textarea id="note" rows="2" maxlength="2000" placeholder="Ví dụ: bao xanh, tối bên trái…"></textarea></div>
+    <div class="row"><button id="previous"><kbd>Space</kbd>Quay lại</button><button id="save-next"><kbd>Enter</kbd>Lưu & tiếp</button></div>
+    <div id="message" role="status" aria-live="polite"></div>
+    <div class="muted">Thay đổi tự lưu. Khi mở lại, bắt đầu ở lượt chưa phân loại. Nhãn áp dụng cho cả lượt chụp; xem frame không đổi ảnh đại diện.</div>
+    <details><summary>Thống kê & file kết quả</summary><div id="stats"></div><p><a href="/labels.csv" download="labels.csv">Tải CSV</a></p><div class="muted" id="output"></div></details>
+  </aside>
+</main>
+<script>
+  let data, index = 0, frame = 0, draft, dirty = false, busy = false, autosaveTimer;
+  const $ = id => document.getElementById(id);
+  const statusNames = {usable: 'Dùng được', rejected: 'Loại', review: 'Cần xem lại'};
+  const statusKeys = {d: 'usable', x: 'rejected', c: 'review'};
+  function message(text = '', error = false) { $('message').textContent = text; $('message').classList.toggle('error', error); }
+  async function api(url, options) {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Không kết nối được chương trình.');
+    return result;
+  }
+  function buttons(container, items, callback) {
+    for (const item of items) {
+      const button = document.createElement('button');
+      button.dataset.id = item.id;
+      const key = document.createElement('kbd'); key.textContent = item.key.toUpperCase();
+      button.append(key, document.createTextNode(item.label));
+      button.onclick = () => callback(item.id);
+      $(container).append(button);
+    }
+  }
+  function refreshChoices() {
+    for (const button of $('statuses').children) {
+      button.classList.toggle('active', button.dataset.status === draft.status);
+      button.setAttribute('aria-pressed', button.dataset.status === draft.status);
+    }
+    for (const container of ['states', 'tags']) for (const button of $(container).children) {
+      const selected = container === 'states' ? draft.state === button.dataset.id : draft.tags.includes(button.dataset.id);
+      button.classList.toggle('active', selected); button.setAttribute('aria-pressed', selected);
+    }
+    $('reason').hidden = draft.status !== 'rejected';
+    $('reason').value = draft.reject_reason;
+  }
+  function changed() {
+    dirty = true; refreshChoices(); clearTimeout(autosaveTimer);
+    const error = validation();
+    message(error ? error : 'Đang lưu…');
+    if (!error) autosaveTimer = setTimeout(() => save().catch(e => message(e.message, true)), 400);
+  }
+  function selectState(id) {
+    if (busy) return;
+    draft.state = id;
+    if (id === 'full') draft.tags = draft.tags.filter(tag => tag !== 'bottom_visible');
+    if (['partial', 'empty'].includes(id) && !draft.tags.includes('bottom_visible')) draft.tags.push('bottom_visible');
+    changed();
+  }
+  function toggleTag(id) {
+    if (busy) return;
+    if (id === 'bottom_visible' && (draft.state === 'full' || ['partial', 'empty'].includes(draft.state))) {
+      message('Nhãn hở đáy đã được xác định bởi trạng thái pallet. Đổi trạng thái nếu cần.', true); return;
+    }
+    draft.tags = draft.tags.includes(id) ? draft.tags.filter(tag => tag !== id) : [...draft.tags, id];
+    changed();
+  }
+  function setStatus(status) { if (!busy) { draft.status = status; changed(); } }
+  function validation() {
+    if (draft.status === 'usable' && !draft.state) return 'Chọn trạng thái pallet bằng phím 1–4.';
+    if (draft.status === 'rejected' && !draft.reject_reason) return 'Chọn lý do loại ảnh.';
+    return '';
+  }
+  function showFrame() {
+    const group = data.groups[index], frames = group.frames;
+    $('image-box').classList.remove('zoomed', 'failed');
+    $('photo').src = '/image?path=' + encodeURIComponent(frames[frame].color);
+    $('frame-info').textContent = frame === 0 ? `Đại diện · 1/${frames.length}` : `Frame ${frame + 1}/${frames.length}`;
+    $('frame-prev').disabled = frame === 0; $('frame-next').disabled = frame === frames.length - 1;
+    $('image-path').textContent = frames[frame].color;
+  }
+  function switchFrame(direction) {
+    frame = Math.max(0, Math.min(frame + direction, data.groups[index].frames.length - 1)); showFrame();
+  }
+  function showGroup() {
+    const group = data.groups[index];
+    draft = structuredClone(data.records[group.id] || {status: 'usable', state: '', tags: [], reject_reason: '', note: ''});
+    dirty = false; frame = 0;
+    $('group-name').textContent = group.id;
+    $('position').textContent = `${index + 1} / ${data.groups.length}`;
+    $('metadata').textContent = [group.captured_at, group.pallet_id ? 'Pallet ' + group.pallet_id : '', group.bag_type].filter(Boolean).join(' · ');
+    $('note').value = draft.note;
+    $('previous').disabled = index === 0;
+    refreshChoices(); showFrame(); message(data.records[group.id] ? 'Đã lưu — có thể sửa nhãn.' : 'Chưa phân loại');
+  }
+  function stats() {
+    const records = data.groups.map(group => data.records[group.id]).filter(Boolean);
+    const usable = records.filter(record => record.status === 'usable');
+    $('progress').textContent = `${records.length} / ${data.groups.length} đã lưu`;
+    const bar = document.createElement('progress'); bar.max = data.groups.length; bar.value = records.length;
+    bar.style.marginLeft = '10px'; $('progress').append(bar);
+    $('stats').replaceChildren();
+    const rows = [ ['Chưa phân loại', data.groups.length - records.length],
+      ...Object.entries(statusNames).map(([id, label]) => [label, records.filter(r => r.status === id).length]),
+      ...data.states.map(s => [s.label, usable.filter(r => r.state === s.id).length]),
+      ...data.tags.map(t => [t.label, usable.filter(r => r.tags.includes(t.id)).length]) ];
+    for (const [label, count] of rows) {
+      const name = document.createElement('span'), value = document.createElement('span');
+      name.textContent = label; value.textContent = count; $('stats').append(name, value);
+    }
+    $('output').textContent = data.output + '/labels.json và labels.csv. Mỗi dòng CSV là một lượt chụp; số nhãn tính trên các lượt dùng được.';
+  }
+  async function save() {
+    clearTimeout(autosaveTimer);
+    if (!dirty) return true;
+    const error = validation();
+    if (error) { message(error, true); return false; }
+    if (busy) return false;
+    busy = true;
+    // Chặn thay đổi trong lúc gửi để nhãn không bị ghi sang lượt khác.
+    const controls = [...document.querySelectorAll('button, select, textarea')];
+    const disabled = controls.map(control => control.disabled);
+    controls.forEach(control => control.disabled = true);
+    try {
+      const id = data.groups[index].id;
+      const result = await api('/api/labels', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id, ...draft})});
+      data.records[id] = result.record; draft = structuredClone(result.record); dirty = false;
+      stats(); message('Đã lưu'); return true;
+    } finally {
+      busy = false; controls.forEach((control, i) => control.disabled = disabled[i]);
+    }
+  }
+  async function navigate(direction) {
+    if (busy) return;
+    if (direction > 0 && !dirty && !data.records[data.groups[index].id]) {
+      const error = validation(); if (error) { message(error, true); return; } dirty = true;
+    }
+    if (!(await save())) return;
+    const next = index + direction;
+    if (next < 0 || next >= data.groups.length) { message('Đã tới cuối danh sách. Có thể quay lại hoặc tới lượt chưa phân loại.'); return; }
+    index = next; showGroup();
+  }
+  function action(callback) { Promise.resolve().then(callback).catch(error => message(error.message, true)); }
+  $('previous').onclick = () => action(() => navigate(-1));
+  $('save-next').onclick = () => action(() => navigate(1));
+  $('frame-prev').onclick = () => switchFrame(-1); $('frame-next').onclick = () => switchFrame(1);
+  $('photo').onclick = () => $('image-box').classList.toggle('zoomed');
+  $('photo').onerror = () => { $('image-box').classList.add('failed'); message('Không tải được ảnh. Kiểm tra file gốc hoặc chương trình đang chạy.', true); };
+  for (const button of $('statuses').children) button.onclick = () => setStatus(button.dataset.status);
+  $('reason').onchange = () => { draft.reject_reason = $('reason').value; changed(); };
+  $('note').oninput = () => { draft.note = $('note').value; changed(); };
+  $('unreviewed').onclick = () => action(async () => {
+    if (busy || !(await save())) return;
+    const next = data.groups.findIndex(group => !data.records[group.id]);
+    if (next < 0) { message('Tất cả lượt chụp đã được phân loại.'); return; }
+    index = next; showGroup();
+  });
+  document.addEventListener('keydown', event => {
+    if (!data || busy || event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.target.matches('input, textarea, select') || event.isComposing) return;
+    const key = event.key.toLowerCase();
+    const state = data.states.find(item => item.key === key), tag = data.tags.find(item => item.key === key);
+    if (!state && !tag && !statusKeys[key] && !['enter', ' ', 'arrowleft', 'arrowright', '[', ']'].includes(key)) return;
+    event.preventDefault();
+    if (state) selectState(state.id);
+    else if (tag) toggleTag(tag.id);
+    else if (statusKeys[key]) setStatus(statusKeys[key]);
+    else if (key === '[' || key === ']') switchFrame(key === '[' ? -1 : 1);
+    else action(() => navigate([' ', 'arrowleft'].includes(key) ? -1 : 1));
+  });
+  window.addEventListener('beforeunload', event => { if (dirty || busy) { event.preventDefault(); event.returnValue = ''; } });
+  action(async () => {
+    data = await api('/api/data');
+    buttons('states', data.states, selectState); buttons('tags', data.tags, toggleTag);
+    const placeholder = new Option('Chọn lý do loại…', ''); $('reason').add(placeholder);
+    for (const reason of data.reasons) $('reason').add(new Option(reason.label, reason.id));
+    index = Math.max(0, data.groups.findIndex(group => !data.records[group.id]));
+    stats(); showGroup();
+  });
+</script>
+</html>

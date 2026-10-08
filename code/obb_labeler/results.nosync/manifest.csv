@@ -1,0 +1,26 @@
+﻿image_id,image_path,depth_path,width,height,sequence_group,state,purpose,reviewed,pallet_count,bag_count,target_id,note
+bao-tai.nosync/session_031,bao-tai.nosync/session_031/session_031_frame_000001_color.png,bao-tai.nosync/session_031/session_031_frame_000001_depth.png,1920,1080,august_red,full,seed_train,1,2,10,1,
+bao-tai.nosync/session_043,bao-tai.nosync/session_043/session_043_frame_000001_color.png,bao-tai.nosync/session_043/session_043_frame_000001_depth.png,1920,1080,august_red,full,seed_train,1,2,12,1,
+bao-tai.nosync/session_058,bao-tai.nosync/session_058/session_058_frame_000001_color.png,bao-tai.nosync/session_058/session_058_frame_000001_depth.png,1920,1080,august_red,full,seed_train,1,2,10,1,
+bao-tai.nosync/session_062,bao-tai.nosync/session_062/session_062_frame_000001_color.png,bao-tai.nosync/session_062/session_062_frame_000001_depth.png,1920,1080,august_green_and_empty,empty,seed_train,1,1,0,1,
+bao-tai.nosync/session_066,bao-tai.nosync/session_066/session_066_frame_000001_color.png,bao-tai.nosync/session_066/session_066_frame_000001_depth.png,1920,1080,august_green_and_empty,full,seed_train,1,1,11,1,
+bao-tai.nosync/session_068,bao-tai.nosync/session_068/session_068_frame_000001_color.png,bao-tai.nosync/session_068/session_068_frame_000001_depth.png,1920,1080,august_green_and_empty,full,seed_train,1,1,11,1,
+bao-tai.nosync/session_071,bao-tai.nosync/session_071/session_071_frame_000001_color.png,bao-tai.nosync/session_071/session_071_frame_000001_depth.png,1920,1080,august_green_and_empty,full,seed_train,1,1,13,1,
+bao-tai.nosync/session_077,bao-tai.nosync/session_077/session_077_frame_000001_color.png,bao-tai.nosync/session_077/session_077_frame_000001_depth.png,1920,1080,august_green_and_empty,full,seed_train,1,1,14,1,
+bao-tai.nosync/session_080,bao-tai.nosync/session_080/session_080_frame_000001_color.png,bao-tai.nosync/session_080/session_080_frame_000001_depth.png,1920,1080,august_green_and_empty,full,seed_train,1,1,14,1,
+bao-tai.nosync/session_084,bao-tai.nosync/session_084/session_084_frame_000001_color.png,bao-tai.nosync/session_084/session_084_frame_000001_depth.png,1920,1080,august_green_and_empty,partial,seed_train,1,1,13,1,
+bao-tai.nosync/session_087,bao-tai.nosync/session_087/session_087_frame_000001_color.png,bao-tai.nosync/session_087/session_087_frame_000001_depth.png,1920,1080,august_green_and_empty,partial,seed_train,1,1,14,1,
+2026-09-11.nosync/140624_459950_0019fdc8,2026-09-11.nosync/140624_459950_0019fdc8/color.png,2026-09-11.nosync/140624_459950_0019fdc8/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,8,1,
+2026-09-11.nosync/140915_016988_0089f392,2026-09-11.nosync/140915_016988_0089f392/color.png,2026-09-11.nosync/140915_016988_0089f392/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,8,1,
+2026-09-11.nosync/141152_799859_184f51f4,2026-09-11.nosync/141152_799859_184f51f4/color.png,2026-09-11.nosync/141152_799859_184f51f4/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,8,1,
+2026-09-11.nosync/141439_259190_4d5d265d,2026-09-11.nosync/141439_259190_4d5d265d/color.png,2026-09-11.nosync/141439_259190_4d5d265d/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,9,1,
+2026-09-11.nosync/141540_472257_a065de50,2026-09-11.nosync/141540_472257_a065de50/color.png,2026-09-11.nosync/141540_472257_a065de50/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,8,1,
+2026-09-11.nosync/141820_608979_b104b99d,2026-09-11.nosync/141820_608979_b104b99d/color.png,2026-09-11.nosync/141820_608979_b104b99d/depth.png,1920,1080,september_pallet_1,full,seed_train,1,2,8,1,
+2026-09-11.nosync/141842_642433_2e6ca506,2026-09-11.nosync/141842_642433_2e6ca506/color.png,2026-09-11.nosync/141842_642433_2e6ca506/depth.png,1920,1080,september_pallet_1,few,seed_train,1,2,7,1,
+2026-09-11.nosync/141848_303508_9da354d1,2026-09-11.nosync/141848_303508_9da354d1/color.png,2026-09-11.nosync/141848_303508_9da354d1/depth.png,1920,1080,september_pallet_1,few,seed_train,1,2,6,1,
+2026-09-11.nosync/141912_862496_b6bd837f,2026-09-11.nosync/141912_862496_b6bd837f/color.png,2026-09-11.nosync/141912_862496_b6bd837f/depth.png,1920,1080,september_pallet_1,few,seed_train,1,2,5,1,
+2026-09-11.nosync/141926_658583_5aa357e0,2026-09-11.nosync/141926_658583_5aa357e0/color.png,2026-09-11.nosync/141926_658583_5aa357e0/depth.png,1920,1080,september_pallet_1,empty,seed_train,1,2,4,1,
+2026-09-11.nosync/142402_058118_bead4034,2026-09-11.nosync/142402_058118_bead4034/color.png,2026-09-11.nosync/142402_058118_bead4034/depth.png,1920,1080,september_pallet_2,full,seed_train,1,4,14,1,"ảnh khó, có 3 pallet trong hình"
+2026-09-11.nosync/142952_977753_5ea29398,2026-09-11.nosync/142952_977753_5ea29398/color.png,2026-09-11.nosync/142952_977753_5ea29398/depth.png,1920,1080,september_pallet_3,full,seed_train,1,5,18,1,"ảnh khó, có 5 pallet trong hình"
+2026-09-11.nosync/143342_865564_c12c56b1,2026-09-11.nosync/143342_865564_c12c56b1/color.png,2026-09-11.nosync/143342_865564_c12c56b1/depth.png,1920,1080,september_pallet_3,full,seed_train,1,3,16,1,"ảnh khó, có 3 pallet trong hình"
+2026-09-11.nosync/143857_695505_85f22d37,2026-09-11.nosync/143857_695505_85f22d37/color.png,2026-09-11.nosync/143857_695505_85f22d37/depth.png,1920,1080,september_pallet_4,full,seed_train,1,3,13,1,

@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gán nhãn OBB · Pallet & bao</title>
+<style>
+  :root { color-scheme: dark; font: 14px/1.4 system-ui,sans-serif; color: #e9eef4; background: #11151b; }
+  * { box-sizing: border-box; } [hidden] { display: none !important; } body { margin: 0; }
+  button,select,input,textarea { font: inherit; color: inherit; }
+  button,select { background: #222c38; border: 1px solid #3b4859; border-radius: 6px; padding: 8px 10px; cursor: pointer; }
+  button:hover { background: #334153; } button:disabled { opacity: .45; cursor: default; }
+  button.active { border-color: #64dbc3; background: #193d36; color: #bbfae9; }
+  button:focus-visible,input:focus-visible,select:focus-visible { outline: 2px solid #64dbc3; outline-offset: 2px; }
+  kbd { font: 12px ui-monospace,monospace; padding: 1px 4px; border: 1px solid #526174; border-radius: 4px; margin-right: 5px; }
+  header { padding: 12px 16px; display: flex; gap: 15px; align-items: center; border-bottom: 1px solid #313b48; }
+  h1 { font-size: 18px; margin: 0; } .muted { color: #a5b3c3; font-size: 12px; }
+  #progress { margin-left: auto; white-space: nowrap; } #image-picker { max-width: 360px; }
+  main { display: grid; grid-template-columns: minmax(0,1fr) 310px; }
+  .workspace { min-width: 0; padding: 12px 16px; }
+  .toolbar,.row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .toolbar { margin-bottom: 9px; } .toolbar .spacer { flex: 1; }
+  #board { width: 100%; height: calc(100vh - 190px); min-height: 360px; background: #070b10; border: 1px solid #313b48; border-radius: 8px; touch-action: none; display: block; user-select: none; }
+  #board.drawing { cursor: crosshair; } #board.panning { cursor: grab; }
+  #hint { min-height: 23px; margin-top: 7px; color: #b3ebd9; }
+  #reason { margin-top: 5px; } aside { border-left: 1px solid #313b48; padding: 12px; max-height: calc(100vh - 61px); overflow: auto; }
+  .section { margin-bottom: 13px; } .label { display: block; font-size: 13px; font-weight: 650; margin-bottom: 6px; }
+  #objects { max-height: 230px; overflow: auto; display: grid; gap: 4px; }
+  #objects button { text-align: left; font-size: 12px; padding: 6px 9px; }
+  .palette { color: #70dec6; } .bag { color: #ffd383; }
+  #properties { background: #19212c; border: 1px solid #354254; border-radius: 7px; padding: 9px; }
+  #properties select { width: 100%; margin-bottom: 7px; }
+  label.check { display: block; margin-top: 7px; font-size: 12px; } input[type=checkbox] { accent-color: #64dbc3; }
+  input[type=number] { width: 80px; border: 1px solid #46556a; border-radius: 4px; padding: 4px; background: #111821; }
+  #geometry { margin: 7px 0; } textarea { width: 100%; background: #19212c; border: 1px solid #3b4859; border-radius: 6px; padding: 7px; resize: vertical; }
+  #review-next { width: 100%; background: #55c9aa; color: #09281e; font-weight: 650; border-color: #55c9aa; margin-top: 7px; }
+  #message { min-height: 23px; margin-top: 7px; color: #8ee5ca; } #message.error { color: #ffb0a9; }
+  #status { font-size: 12px; margin-bottom: 7px; color: #a5b3c3; }
+  details { border-top: 1px solid #313b48; padding-top: 9px; margin-top: 12px; font-size: 12px; } summary { cursor: pointer; }
+  #output { overflow-wrap: anywhere; } .instructions p { margin: 8px 0; }
+  @media(max-width:900px) { header { flex-wrap: wrap; } #progress { margin-left: 0; } main { grid-template-columns: 1fr; } #board { height: 50vh; } aside { max-height: none; border-left: 0; } #image-picker { max-width: 100%; } }
+</style>
+<header>
+  <div><h1>Gán nhãn OBB</h1><div class="muted">25 ảnh mẫu · pallet và từng bao</div></div>
+  <select id="image-picker" aria-label="Chọn ảnh"></select>
+  <span id="progress">Đang tải…</span>
+</header>
+<main>
+  <section class="workspace">
+    <div class="toolbar">
+      <button id="draw-pallet"><kbd>1</kbd>Vẽ pallet</button>
+      <button id="draw-bag"><kbd>2</kbd>Vẽ bao</button>
+      <button id="select-mode"><kbd>V</kbd>Chọn / sửa</button>
+      <button id="pan-mode"><kbd>H</kbd>Di chuyển ảnh</button>
+      <span class="spacer"></span>
+      <button id="undo"><kbd>Ctrl Z</kbd>Hoàn tác</button>
+      <button id="fit">Vừa ảnh</button>
+    </div>
+    <svg id="board" xmlns="http://www.w3.org/2000/svg" aria-label="Ảnh và vùng vẽ nhãn">
+      <image id="photo" x="0" y="0"/>
+      <g id="shapes"></g><g id="preview"></g>
+    </svg>
+    <div id="hint"></div><div id="reason" class="muted"></div><div id="path" class="muted"></div>
+  </section>
+  <aside>
+    <div id="status"></div>
+    <div class="section"><label class="label" for="new-parent">Bao mới thuộc pallet</label><select id="new-parent" style="width:100%"></select></div>
+    <div class="section"><div class="label">Đối tượng đã khoanh</div><div id="objects"></div></div>
+    <div id="properties" class="section" hidden>
+      <div class="label" id="object-name"></div>
+      <select id="class-id" aria-label="Lớp đối tượng"><option value="0">Pallet</option><option value="1">Bao</option></select>
+      <label id="parent-label" class="label" for="parent-id">Thuộc pallet</label><select id="parent-id"></select>
+      <label id="target-label" class="check"><input id="target" type="checkbox"> Pallet mục tiêu (chỉ một)</label>
+      <label class="check"><input id="occluded" type="checkbox"> Bị che khuất</label>
+      <label class="check"><input id="truncated" type="checkbox"> Bị cắt bởi biên ảnh</label>
+      <div class="row" style="margin-top:8px"><label for="angle">Góc °</label><input id="angle" type="number" step="1"></div>
+      <div id="geometry" class="muted"></div><button id="delete"><kbd>Del</kbd>Xóa đối tượng</button>
+    </div>
+    <div class="section"><label class="label" for="note">Ghi chú ảnh</label><textarea id="note" rows="2" maxlength="2000" placeholder="Đối tượng khó, điểm cần kiểm tra…"></textarea></div>
+    <div class="row"><button id="previous"><kbd>Space</kbd>Trước</button><button id="next">Sau <kbd>→</kbd></button><button id="save">Lưu nháp</button></div>
+    <button id="review-next"><kbd>Enter</kbd>Đã kiểm tra & tiếp</button>
+    <div id="message" role="status" aria-live="polite"></div>
+    <div class="muted">Nháp tự lưu. Chỉ ảnh đã kiểm tra được xuất thành nhãn YOLO.</div>
+    <details open class="instructions"><summary>Cách vẽ & sửa</summary>
+      <p><b>Vẽ bằng 3 lần bấm:</b> chọn Pallet/Bao → bấm hai đầu của một cạnh → bấm điểm trên cạnh đối diện.</p>
+      <p><b>Chọn / sửa:</b> kéo trong box để di chuyển; kéo 4 góc để đổi kích thước; kéo nút tròn ngoài box để xoay.</p>
+      <p><kbd>Esc</kbd>hủy nét đang vẽ · <kbd>[</kbd><kbd>]</kbd>xoay box 1° · <b>Shift</b> tăng bước xoay/di chuyển.</p>
+      <p>Lăn chuột để zoom. Dùng <b>H</b> rồi kéo để di chuyển ảnh; <b>Vừa ảnh</b> để trở lại.</p>
+      <p>Khoanh pallet mục tiêu trước, gồm cả bao tràn ra ngoài. Khoanh riêng các vùng pallet/bao khác rõ ràng. Chọn đúng pallet liên kết cho từng bao.</p>
+      <p>Box bao bám thân, bỏ tai/mép gấp nhỏ. Box pallet không cần khoảng đệm lớn. Với đối tượng mơ hồ, lưu nháp và ghi chú để xem lại.</p>
+    </details>
+    <details><summary>File kết quả</summary><p id="output" class="muted"></p></details>
+  </aside>
+</main>
+<script>
+  const $ = id => document.getElementById(id), svg = $('board'), NS = 'http://www.w3.org/2000/svg';
+  let data, index = 0, draft, selected = null, mode = 'select', points = [], hover = null;
+  let activeParent = null, drag = null, history = [], dirty = false, busy = false, timer;
+  let view = {x:0,y:0,w:1920,h:1080};
+  const image = () => data.images[index];
+  const chosen = () => draft.objects.find(box => box.id === selected);
+  const clone = value => structuredClone(value);
+  const name = box => (box.class_id === 0 ? 'P' : 'B') + box.id;
+  const pallets = () => draft.objects.filter(box => box.class_id === 0);
+  function message(text = '', error = false) { $('message').textContent = text; $('message').classList.toggle('error', error); }
+  async function api(url, options) {
+    const response = await fetch(url, options), result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Không kết nối được chương trình.');
+    return result;
+  }
+  function action(callback) { Promise.resolve().then(callback).catch(error => message(error.message, true)); }
+  function remember() { history.push(clone(draft)); if (history.length > 40) history.shift(); }
+  function changed() {
+    draft.reviewed = false; dirty = true; clearTimeout(timer); render(); refresh();
+    message('Đang lưu nháp…'); scheduleSave();
+  }
+  function scheduleSave() {
+    clearTimeout(timer);
+    timer=setTimeout(()=>{if(points.length||drag||busy)scheduleSave();else action(()=>save());},500);
+  }
+  function corners(box) {
+    const a=box.angle*Math.PI/180,c=Math.cos(a),s=Math.sin(a);
+    return [[-box.w/2,-box.h/2],[box.w/2,-box.h/2],[box.w/2,box.h/2],[-box.w/2,box.h/2]]
+      .map(([x,y])=>({x:box.cx+c*x-s*y,y:box.cy+s*x+c*y}));
+  }
+  function node(tag, attrs={}, text='') {
+    const element=document.createElementNS(NS,tag);
+    for(const [key,value] of Object.entries(attrs)) element.setAttribute(key,value);
+    if(text) element.textContent=text;
+    return element;
+  }
+  function scale() { return svg.getScreenCTM()?.a || 1; }
+  function point(event) {
+    const p=svg.createSVGPoint(); p.x=event.clientX;p.y=event.clientY;
+    return p.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  function clampPoint(p) { return {x:Math.max(0,Math.min(image().width,p.x)),y:Math.max(0,Math.min(image().height,p.y))}; }
+  function boxFromPoints(a,b,p) {
+    const dx=b.x-a.x,dy=b.y-a.y,w=Math.hypot(dx,dy);
+    if(w<2) return null;
+    const ux=dx/w,uy=dy/w,d=(p.x-a.x)*(-uy)+(p.y-a.y)*ux;
+    return {cx:(a.x+b.x)/2-uy*d/2,cy:(a.y+b.y)/2+ux*d/2,w,h:Math.abs(d),angle:Math.atan2(dy,dx)*180/Math.PI};
+  }
+  function render() {
+    $('shapes').replaceChildren(); $('preview').replaceChildren();
+    const factor=scale(),font=12/factor,radius=5/factor;
+    for(const box of [...draft.objects].sort((a,b)=>a.class_id-b.class_id)) {
+      const pts=corners(box),color=box.class_id===0?'#62dec5':'#ffcc70';
+      const group=node('g',{'data-box':box.id});
+      group.append(node('polygon',{points:pts.map(p=>`${p.x},${p.y}`).join(' '),fill:color,'fill-opacity':box.id===selected ? .17 : .06,
+        stroke:color,'stroke-width':box.id===selected?3:1.5,'vector-effect':'non-scaling-stroke',cursor:mode==='select'?'move':'crosshair'}));
+      const label=name(box)+(box.target?' ★':(box.parent_id?' → P'+box.parent_id:''));
+      group.append(node('text',{x:pts[0].x+3/factor,y:pts[0].y-6/factor,fill:color,'font-size':font,'paint-order':'stroke',stroke:'#11151b','stroke-width':3/factor},label));
+      if(box.id===selected && mode==='select') {
+        pts.forEach((p,i)=>group.append(node('circle',{cx:p.x,cy:p.y,r:radius,fill:'#fff',stroke:color,'stroke-width':1.5,'vector-effect':'non-scaling-stroke','data-handle':i,cursor:'nwse-resize'})));
+        const a=box.angle*Math.PI/180,offset=box.h/2+30/factor;
+        const top={x:box.cx+Math.sin(a)*box.h/2,y:box.cy-Math.cos(a)*box.h/2};
+        const rot={x:box.cx+Math.sin(a)*offset,y:box.cy-Math.cos(a)*offset};
+        group.append(node('line',{x1:top.x,y1:top.y,x2:rot.x,y2:rot.y,stroke:color,'stroke-width':1.5,'vector-effect':'non-scaling-stroke'}));
+        group.append(node('circle',{cx:rot.x,cy:rot.y,r:radius+1/factor,fill:color,'data-handle':'rotate',cursor:'grab'}));
+      }
+      $('shapes').append(group);
+    }
+    points.forEach(p=>$('preview').append(node('circle',{cx:p.x,cy:p.y,r:radius,fill:'#fff'})));
+    if(points.length && hover) {
+      if(points.length===1) $('preview').append(node('line',{x1:points[0].x,y1:points[0].y,x2:hover.x,y2:hover.y,stroke:'#fff','stroke-width':2,'vector-effect':'non-scaling-stroke','stroke-dasharray':'5 4'}));
+      else {
+        const box=boxFromPoints(points[0],points[1],hover);
+        if(box) $('preview').append(node('polygon',{points:corners(box).map(p=>`${p.x},${p.y}`).join(' '),fill:mode==='pallet'?'#62dec5':'#ffcc70','fill-opacity':.12,stroke:'#fff','stroke-width':2,'vector-effect':'non-scaling-stroke'}));
+      }
+    }
+  }
+  function options(select, value) {
+    select.replaceChildren(new Option('Ngoài pallet / chưa xác định',''));
+    for(const box of pallets()) select.add(new Option(name(box)+(box.target?' · mục tiêu':''),String(box.id)));
+    select.value=value===null?'':String(value);
+  }
+  function refresh() {
+    options($('new-parent'),activeParent);
+    $('objects').replaceChildren();
+    if(!draft.objects.length) $('objects').textContent='Chưa có box. Bấm 1 để khoanh pallet mục tiêu.';
+    for(const box of draft.objects) {
+      const button=document.createElement('button');
+      button.textContent=name(box)+' · '+(box.class_id===0?'Pallet':'Bao')+(box.target?' ★ mục tiêu':(box.parent_id?' → P'+box.parent_id:''));
+      button.classList.toggle('active',box.id===selected);button.classList.add(box.class_id===0?'palette':'bag');
+      button.onclick=()=>{if(!busy){setMode('select');selectBox(box.id);}};
+      $('objects').append(button);
+    }
+    const box=chosen(); $('properties').hidden=!box;
+    if(box) {
+      $('object-name').textContent=name(box); $('class-id').value=box.class_id;
+      options($('parent-id'),box.parent_id);
+      $('parent-id').hidden=$('parent-label').hidden=box.class_id===0;
+      $('target-label').hidden=box.class_id===1;
+      $('target').checked=box.target; $('occluded').checked=box.occluded; $('truncated').checked=box.truncated;
+      if(document.activeElement!==$('angle')) $('angle').value=Math.round(box.angle*10)/10;
+      $('geometry').textContent=`Tâm ${box.cx.toFixed(0)}, ${box.cy.toFixed(0)} · ${box.w.toFixed(0)} × ${box.h.toFixed(0)} px`;
+    }
+    $('status').textContent=draft.reviewed?'✓ Đã kiểm tra — sửa nhãn sẽ trở thành nháp':'Ảnh chưa xác nhận · '+draft.objects.length+' đối tượng';
+    $('previous').disabled=index===0; $('next').disabled=index===data.images.length-1;
+    $('undo').disabled=!history.length;
+    for(const [id,value] of [['draw-pallet','pallet'],['draw-bag','bag'],['select-mode','select'],['pan-mode','pan']]) $(id).classList.toggle('active',mode===value);
+    svg.classList.toggle('drawing',['pallet','bag'].includes(mode));svg.classList.toggle('panning',mode==='pan');
+    $('hint').textContent=mode==='pan'?'Kéo ảnh để di chuyển. Lăn chuột để zoom.':mode==='select'?'Chọn box để sửa. Kéo góc đổi kích thước; nút tròn bên ngoài để xoay.':
+      (points.length===0?'Bấm điểm 1: một đầu của cạnh.':points.length===1?'Bấm điểm 2: đầu kia của cùng cạnh.':'Bấm điểm 3: cạnh đối diện để xác định chiều rộng.')+' Đang vẽ '+(mode==='pallet'?'PALLET':'BAO')+'.';
+  }
+  function setMode(value) { if(busy)return;mode=value;points=[];hover=null;render();refresh(); }
+  function selectBox(id) { selected=id;const box=chosen();if(box?.class_id===0)activeParent=box.id;else if(box?.parent_id)activeParent=box.parent_id;render();refresh(); }
+  function fit() { if(!data)return;view={x:0,y:0,w:image().width,h:image().height};svg.setAttribute('viewBox',`0 0 ${view.w} ${view.h}`);render(); }
+  function stats() {
+    $('progress').textContent=data.images.filter(item=>data.records[item.id]?.reviewed).length+' / '+data.images.length+' đã kiểm tra';
+    for(let i=0;i<data.images.length;i++) $('image-picker').options[i].textContent=(data.records[data.images[i].id]?.reviewed?'✓ ':'')+(i+1)+'. '+data.images[i].id.split('/').pop();
+  }
+  function loadImage() {
+    draft=clone(data.records[image().id]||{objects:[],reviewed:false,note:''});
+    selected=null;points=[];hover=null;drag=null;history=[];dirty=false;activeParent=pallets().find(p=>p.target)?.id??null;
+    mode='select';$('image-picker').value=index;$('note').value=draft.note;
+    $('photo').setAttribute('width',image().width);$('photo').setAttribute('height',image().height);
+    $('photo').setAttribute('href','/image?path='+encodeURIComponent(image().image_path));
+    $('reason').textContent='Lý do chọn: '+image().reason;
+    $('path').textContent=image().image_path+' · '+image().width+'×'+image().height;
+    fit();refresh();message(data.records[image().id]?'Đã đọc nhãn lưu trên máy.':'Chưa có nhãn. Bạn khoanh pallet mục tiêu trước.');
+  }
+  async function save(reviewed) {
+    clearTimeout(timer); if(busy)return false;
+    if(points.length){message('Hoàn tất 3 điểm, hoặc bấm Esc hủy nét đang vẽ trước khi lưu/chuyển ảnh.',true);return false;}
+    if(!dirty && reviewed===undefined)return true;
+    busy=true;
+    const controls=[...document.querySelectorAll('button,select,input,textarea')],disabled=controls.map(c=>c.disabled);
+    controls.forEach(c=>c.disabled=true);
+    try {
+      const result=await api('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_id:image().id,...draft,reviewed:reviewed??draft.reviewed})});
+      draft=clone(result.record);data.records[image().id]=clone(result.record);dirty=false;stats();
+      message(draft.reviewed?'Đã kiểm tra và xuất nhãn YOLO.':'Đã lưu nháp');return true;
+    } finally { busy=false;controls.forEach((c,i)=>c.disabled=disabled[i]);refresh(); }
+  }
+  async function navigate(next,reviewed) {
+    if(busy)return;
+    if(!(await save(reviewed)))return;
+    if(next<0||next>=data.images.length){message('Đã tới cuối bộ 25 ảnh. Nhãn đã lưu trên máy.');return;}
+    index=next;loadImage();
+  }
+  function remove() {
+    if(busy||!chosen())return;remember();
+    draft.objects=draft.objects.filter(box=>box.id!==selected);
+    for(const box of draft.objects)if(box.parent_id===selected)box.parent_id=null;
+    if(activeParent===selected)activeParent=pallets().find(p=>p.target)?.id??null;
+    selected=null;changed();
+  }
+  svg.addEventListener('pointerdown',event=>{
+    if(!data||busy||event.button!==0)return;
+    const p=point(event);
+    if(mode==='pan') {drag={kind:'pan',start:p,view:{...view}};svg.setPointerCapture(event.pointerId);return;}
+    if(mode==='pallet'||mode==='bag') {
+      if(p.x<0||p.y<0||p.x>image().width||p.y>image().height)return;
+      const q=clampPoint(p);
+      if(points.length<2){if(points.length&&Math.hypot(q.x-points[0].x,q.y-points[0].y)<2)return;points.push(q);hover=q;render();refresh();return;}
+      const box=boxFromPoints(points[0],points[1],q);
+      if(!box||box.h<2){message('Box quá mỏng. Bấm điểm ở cạnh đối diện.',true);return;}
+      remember(); const id=Math.max(0,...draft.objects.map(b=>b.id))+1;
+      draft.objects.push({id,class_id:mode==='pallet'?0:1,...box,parent_id:mode==='bag'?activeParent:null,
+        target:mode==='pallet'&&!pallets().some(b=>b.target),occluded:false,truncated:false});
+      selected=id;if(mode==='pallet')activeParent=id;points=[];hover=null;changed();return;
+    }
+    const group=event.target.closest('[data-box]');
+    if(!group){selected=null;render();refresh();return;}
+    selectBox(Number(group.dataset.box));remember();
+    const handle=event.target.getAttribute('data-handle');
+    drag={kind:handle==='rotate'?'rotate':handle!==null?'resize':'move',corner:Number(handle),start:p,original:clone(chosen()),moved:false};
+    svg.setPointerCapture(event.pointerId);
+  });
+  svg.addEventListener('pointermove',event=>{
+    if(!data||busy)return;const p=point(event);
+    if(!drag){if(points.length){hover=clampPoint(p);render();}return;}
+    if(drag.kind==='pan') {
+      const dx=p.x-drag.start.x,dy=p.y-drag.start.y;view.x-=dx;view.y-=dy;
+      svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);render();return;
+    }
+    const box=chosen(),old=drag.original;if(!box)return;
+    if(drag.kind==='move') {
+      const pts=corners(old),dx=Math.max(-Math.min(...pts.map(p=>p.x)),Math.min(image().width-Math.max(...pts.map(p=>p.x)),p.x-drag.start.x));
+      const dy=Math.max(-Math.min(...pts.map(p=>p.y)),Math.min(image().height-Math.max(...pts.map(p=>p.y)),p.y-drag.start.y));
+      box.cx=old.cx+dx;box.cy=old.cy+dy;
+    } else if(drag.kind==='rotate') {
+      let angle=Math.atan2(p.y-box.cy,p.x-box.cx)*180/Math.PI+90;
+      box.angle=event.shiftKey?Math.round(angle/15)*15:angle;
+    } else {
+      const opposite=corners(old)[(drag.corner+2)%4],a=old.angle*Math.PI/180,c=Math.cos(a),s=Math.sin(a);
+      const du=(p.x-opposite.x)*c+(p.y-opposite.y)*s,dv=-(p.x-opposite.x)*s+(p.y-opposite.y)*c;
+      box.w=Math.max(2,Math.abs(du));box.h=Math.max(2,Math.abs(dv));box.cx=(p.x+opposite.x)/2;box.cy=(p.y+opposite.y)/2;
+    }
+    drag.moved=true;render();
+  });
+  function endDrag() {
+    if(!drag)return;const old=drag;drag=null;
+    if(old.kind!=='pan'){if(old.moved)changed();else{history.pop();refresh();}}
+  }
+  svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
+  svg.addEventListener('wheel',event=>{
+    if(!data||drag)return;event.preventDefault();
+    const p=point(event),factor=event.deltaY>0?1.15:1/1.15;
+    const w=Math.min(image().width,Math.max(image().width/8,view.w*factor)),ratio=w/view.w;
+    view={x:p.x-(p.x-view.x)*ratio,y:p.y-(p.y-view.y)*ratio,w,h:view.h*ratio};
+    if(w===image().width)view={x:0,y:0,w:image().width,h:image().height};
+    svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);render();
+  },{passive:false});
+  $('draw-pallet').onclick=()=>setMode('pallet');$('draw-bag').onclick=()=>setMode('bag');$('select-mode').onclick=()=>setMode('select');$('pan-mode').onclick=()=>setMode('pan');
+  $('fit').onclick=fit; $('delete').onclick=remove;
+  $('undo').onclick=()=>{if(busy||!history.length)return;draft=history.pop();points=[];selected=null;activeParent=pallets().find(b=>b.target)?.id??null;$('note').value=draft.note;changed();};
+  $('new-parent').onchange=()=>activeParent=$('new-parent').value?Number($('new-parent').value):null;
+  $('class-id').onchange=()=>{
+    if(!chosen())return;remember();const box=chosen();box.class_id=Number($('class-id').value);
+    if(box.class_id===1){box.target=false;box.parent_id=activeParent===box.id?null:activeParent;for(const other of draft.objects)if(other.parent_id===box.id)other.parent_id=null;activeParent=pallets().find(b=>b.target)?.id??null;}
+    else{box.parent_id=null;box.target=!pallets().some(b=>b.id!==box.id&&b.target);activeParent=box.id;}changed();
+  };
+  $('parent-id').onchange=()=>{if(!chosen())return;remember();chosen().parent_id=$('parent-id').value?Number($('parent-id').value):null;activeParent=chosen().parent_id;changed();};
+  for(const key of ['target','occluded','truncated'])$(key).onchange=()=>{
+    if(!chosen())return;remember();const value=$(key).checked;
+    if(key==='target'&&value)for(const box of pallets())box.target=false;
+    chosen()[key]=value;changed();
+  };
+  $('angle').onchange=()=>{if(!chosen())return;const value=Number($('angle').value);if(!Number.isFinite(value))return;remember();chosen().angle=value;changed();};
+  $('note').oninput=()=>{remember();draft.note=$('note').value;changed();};
+  $('previous').onclick=()=>action(()=>navigate(index-1));$('next').onclick=()=>action(()=>navigate(index+1));
+  $('save').onclick=()=>action(()=>save());$('review-next').onclick=()=>action(()=>navigate(index+1,true));
+  $('image-picker').onchange=()=>{const next=Number($('image-picker').value);$('image-picker').value=index;action(()=>navigate(next));};
+  document.addEventListener('keydown',event=>{
+    if(!data||busy||event.repeat||event.isComposing||event.target.matches('input,textarea,select'))return;
+    const key=event.key.toLowerCase();
+    if((event.ctrlKey||event.metaKey)&&key==='z'){event.preventDefault();$('undo').click();return;}
+    if(event.ctrlKey||event.metaKey||event.altKey)return;
+    if(!['1','2','v','h','escape','delete','backspace','[',']',' ','enter','arrowleft','arrowright','arrowup','arrowdown'].includes(key))return;
+    event.preventDefault();
+    if(key==='1'||key==='2')setMode(key==='1'?'pallet':'bag');
+    else if(key==='v'||key==='h')setMode(key==='v'?'select':'pan');
+    else if(key==='escape'){points=[];hover=null;setMode('select');message('Đã hủy nét đang vẽ.');}
+    else if(key==='delete'||key==='backspace')remove();
+    else if(key==='['||key===']'){if(chosen()){remember();chosen().angle+=(key==='['?-1:1)*(event.shiftKey?10:1);changed();}}
+    else if(key==='enter')action(()=>navigate(index+1,true));
+    else if(key===' ')action(()=>navigate(index-1));
+    else if(chosen()&&mode==='select') {
+      const box=chosen(),step=event.shiftKey?10:1;remember();
+      if(key==='arrowleft')box.cx-=step;if(key==='arrowright')box.cx+=step;if(key==='arrowup')box.cy-=step;if(key==='arrowdown')box.cy+=step;changed();
+    } else if(key==='arrowright')action(()=>navigate(index+1));
+    else if(key==='arrowleft')action(()=>navigate(index-1));
+  });
+  window.addEventListener('beforeunload',event=>{if(dirty||busy||points.length){event.preventDefault();event.returnValue='';}});
+  window.addEventListener('resize',()=>{if(data)render();});
+  $('photo').addEventListener('error',()=>message('Không tải được ảnh. Kiểm tra file gốc hoặc chương trình đang chạy.',true));
+  action(async()=>{
+    data=await api('/api/data');data.images.forEach((item,i)=>$('image-picker').add(new Option((i+1)+'. '+item.id.split('/').pop(),String(i))));
+    index=Math.max(0,data.images.findIndex(item=>!data.records[item.id]?.reviewed));
+    $('output').textContent=data.output+' — annotations.json lưu nháp và quan hệ pallet/bao; yolo/labels chỉ chứa ảnh đã kiểm tra; manifest.csv giữ nhóm chuỗi chụp.';
+    stats();loadImage();
+  });
+</script>
+</html>
