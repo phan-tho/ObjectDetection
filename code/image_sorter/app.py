@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, urlparse
 
 APP_DIR = Path(__file__).resolve().parent
 ROOT = APP_DIR.parent.parent
-SOURCES = ("bao-tai.nosync", "2026-09-11.nosync")
+SOURCES = ("bao-tai", "2026-09-11")
 STATES = [
     {"id": "full", "label": "Đầy — không hở đáy", "key": "1"},
     {"id": "partial", "label": "Vơi — hở đáy, còn trên 3 bao", "key": "2"},
@@ -49,7 +49,7 @@ def relative(path):
 def scan_groups():
     # Tận dụng nhóm chuỗi chụp đã có; đây là gợi ý cho việc chia tập sau này.
     sequence_groups = {}
-    manifest = ROOT / "annotations.nosync/survey_2026-09-11/manifest.csv"
+    manifest = ROOT / "annotations/survey_2026-09-11/manifest.csv"
     if manifest.exists():
         with manifest.open(encoding="utf-8-sig", newline="") as stream:
             for row in csv.DictReader(stream):
@@ -64,7 +64,7 @@ def scan_groups():
         for session in sorted(folder.iterdir()):
             if not session.is_dir():
                 continue
-            if source == "bao-tai.nosync":
+            if source == "bao-tai":
                 colors = sorted(session.glob("*_color.png"))
                 if not colors:
                     continue
@@ -102,7 +102,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--no-browser", action="store_true")
-    parser.add_argument("--output", type=Path, default=APP_DIR / "results.nosync")
+    parser.add_argument("--output", type=Path, default=APP_DIR / "results")
     args = parser.parse_args()
     groups = scan_groups()
     if not groups:

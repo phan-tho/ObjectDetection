@@ -13,8 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DATASETS = {
-    "phanbth/bao-tai-1": "bao-tai.nosync",
-    "phanbth/bao-tai-2": "2026-09-11.nosync",
+    "phanbth/bao-tai-1": "bao-tai",
+    "phanbth/bao-tai-2": "2026-09-11",
 }
 
 

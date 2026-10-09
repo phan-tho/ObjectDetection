@@ -1,26 +1,26 @@
 ﻿id,image_path,state,reason,sequence_group
-bao-tai.nosync/session_031,bao-tai.nosync/session_031/session_031_frame_000001_color.png,full,"Bao đỏ, pallet đầy, ánh sáng mạnh; có chồng hàng bên cạnh.",august_red
-bao-tai.nosync/session_043,bao-tai.nosync/session_043/session_043_frame_000001_color.png,full,"Bao đỏ, pallet lệch; có bao nằm tách ra ở bên phải.",august_red
-bao-tai.nosync/session_058,bao-tai.nosync/session_058/session_058_frame_000001_color.png,full,"Bao đỏ, một bao xoay/chồng lên các bao khác.",august_red
-bao-tai.nosync/session_062,bao-tai.nosync/session_062/session_062_frame_000001_color.png,empty,"Pallet kim loại rỗng, ánh sáng tối.",august_green_and_empty
-bao-tai.nosync/session_066,bao-tai.nosync/session_066/session_066_frame_000001_color.png,full,"Bao xanh, pallet đầy, ánh sáng thông thường.",august_green_and_empty
-bao-tai.nosync/session_068,bao-tai.nosync/session_068/session_068_frame_000001_color.png,full,"Bao xanh, có vệt ánh sáng đỏ trên bao.",august_green_and_empty
-bao-tai.nosync/session_071,bao-tai.nosync/session_071/session_071_frame_000001_color.png,full,Pallet đầy; có bao ngoài pallet ở bên trái.,august_green_and_empty
-bao-tai.nosync/session_077,bao-tai.nosync/session_077/session_077_frame_000001_color.png,full,Bao xanh xoay chéo trên chồng hàng.,august_green_and_empty
-bao-tai.nosync/session_080,bao-tai.nosync/session_080/session_080_frame_000001_color.png,full,Bao nhăn/móp bị chồng lấn.,august_green_and_empty
-bao-tai.nosync/session_084,bao-tai.nosync/session_084/session_084_frame_000001_color.png,partial,"Pallet vơi, bao xoay/chồng mạnh và hở đáy.",august_green_and_empty
-bao-tai.nosync/session_087,bao-tai.nosync/session_087/session_087_frame_000001_color.png,partial,"Pallet vơi, cách xếp khác, hở đáy.",august_green_and_empty
-2026-09-11.nosync/140624_459950_0019fdc8,2026-09-11.nosync/140624_459950_0019fdc8/color.png,full,"Bao CHEMVIS, lớp trên cao; có pallet CPE sát bên.",september_pallet_1
-2026-09-11.nosync/140915_016988_0089f392,2026-09-11.nosync/140915_016988_0089f392/color.png,full,"CHEMVIS lớp 3, bố trí bao và kích thước trong ảnh khác.",september_pallet_1
-2026-09-11.nosync/141152_799859_184f51f4,2026-09-11.nosync/141152_799859_184f51f4/color.png,full,"CHEMVIS lớp 5, góc nhìn và chiều cao chồng bao thay đổi.",september_pallet_1
-2026-09-11.nosync/141439_259190_4d5d265d,2026-09-11.nosync/141439_259190_4d5d265d/color.png,full,"CHEMVIS lớp 7, một bao xoay chéo.",september_pallet_1
-2026-09-11.nosync/141540_472257_a065de50,2026-09-11.nosync/141540_472257_a065de50/color.png,full,"CHEMVIS lớp 8, thay đổi cách xếp và độ cao.",september_pallet_1
-2026-09-11.nosync/141820_608979_b104b99d,2026-09-11.nosync/141820_608979_b104b99d/color.png,full,"CHEMVIS lớp cuối còn đầy mặt, bao ở xa camera hơn.",september_pallet_1
-2026-09-11.nosync/141842_642433_2e6ca506,2026-09-11.nosync/141842_642433_2e6ca506/color.png,few,Chỉ còn 3 bao trên pallet gỗ; pallet bên cạnh vẫn đầy.,september_pallet_1
-2026-09-11.nosync/141848_303508_9da354d1,2026-09-11.nosync/141848_303508_9da354d1/color.png,few,"Chỉ còn 2 bao, hở nhiều đáy pallet.",september_pallet_1
-2026-09-11.nosync/141912_862496_b6bd837f,2026-09-11.nosync/141912_862496_b6bd837f/color.png,few,Chỉ còn 1 bao; cần phân biệt với chồng hàng lớn bên cạnh.,september_pallet_1
-2026-09-11.nosync/141926_658583_5aa357e0,2026-09-11.nosync/141926_658583_5aa357e0/color.png,empty,"Pallet gỗ mục tiêu rỗng, cạnh pallet CPE đầy.",september_pallet_1
-2026-09-11.nosync/142402_058118_bead4034,2026-09-11.nosync/142402_058118_bead4034/color.png,full,Pallet mục tiêu chuyển sang bao CPE; nhiều vùng hàng trong ảnh.,september_pallet_2
-2026-09-11.nosync/142952_977753_5ea29398,2026-09-11.nosync/142952_977753_5ea29398/color.png,full,Nhiều pallet với bao trắng/xanh; ánh sáng khác.,september_pallet_3
-2026-09-11.nosync/143342_865564_c12c56b1,2026-09-11.nosync/143342_865564_c12c56b1/color.png,full,"Pallet lệch/xoay, các chồng hàng đứng sát nhau.",september_pallet_3
-2026-09-11.nosync/143857_695505_85f22d37,2026-09-11.nosync/143857_695505_85f22d37/color.png,full,"Bao CABOT màu nâu, có chồng bao trắng và xanh bên cạnh.",september_pallet_4
+bao-tai/session_031,bao-tai/session_031/session_031_frame_000001_color.png,full,"Bao đỏ, pallet đầy, ánh sáng mạnh; có chồng hàng bên cạnh.",august_red
+bao-tai/session_043,bao-tai/session_043/session_043_frame_000001_color.png,full,"Bao đỏ, pallet lệch; có bao nằm tách ra ở bên phải.",august_red
+bao-tai/session_058,bao-tai/session_058/session_058_frame_000001_color.png,full,"Bao đỏ, một bao xoay/chồng lên các bao khác.",august_red
+bao-tai/session_062,bao-tai/session_062/session_062_frame_000001_color.png,empty,"Pallet kim loại rỗng, ánh sáng tối.",august_green_and_empty
+bao-tai/session_066,bao-tai/session_066/session_066_frame_000001_color.png,full,"Bao xanh, pallet đầy, ánh sáng thông thường.",august_green_and_empty
+bao-tai/session_068,bao-tai/session_068/session_068_frame_000001_color.png,full,"Bao xanh, có vệt ánh sáng đỏ trên bao.",august_green_and_empty
+bao-tai/session_071,bao-tai/session_071/session_071_frame_000001_color.png,full,Pallet đầy; có bao ngoài pallet ở bên trái.,august_green_and_empty
+bao-tai/session_077,bao-tai/session_077/session_077_frame_000001_color.png,full,Bao xanh xoay chéo trên chồng hàng.,august_green_and_empty
+bao-tai/session_080,bao-tai/session_080/session_080_frame_000001_color.png,full,Bao nhăn/móp bị chồng lấn.,august_green_and_empty
+bao-tai/session_084,bao-tai/session_084/session_084_frame_000001_color.png,partial,"Pallet vơi, bao xoay/chồng mạnh và hở đáy.",august_green_and_empty
+bao-tai/session_087,bao-tai/session_087/session_087_frame_000001_color.png,partial,"Pallet vơi, cách xếp khác, hở đáy.",august_green_and_empty
+2026-09-11/140624_459950_0019fdc8,2026-09-11/140624_459950_0019fdc8/color.png,full,"Bao CHEMVIS, lớp trên cao; có pallet CPE sát bên.",september_pallet_1
+2026-09-11/140915_016988_0089f392,2026-09-11/140915_016988_0089f392/color.png,full,"CHEMVIS lớp 3, bố trí bao và kích thước trong ảnh khác.",september_pallet_1
+2026-09-11/141152_799859_184f51f4,2026-09-11/141152_799859_184f51f4/color.png,full,"CHEMVIS lớp 5, góc nhìn và chiều cao chồng bao thay đổi.",september_pallet_1
+2026-09-11/141439_259190_4d5d265d,2026-09-11/141439_259190_4d5d265d/color.png,full,"CHEMVIS lớp 7, một bao xoay chéo.",september_pallet_1
+2026-09-11/141540_472257_a065de50,2026-09-11/141540_472257_a065de50/color.png,full,"CHEMVIS lớp 8, thay đổi cách xếp và độ cao.",september_pallet_1
+2026-09-11/141820_608979_b104b99d,2026-09-11/141820_608979_b104b99d/color.png,full,"CHEMVIS lớp cuối còn đầy mặt, bao ở xa camera hơn.",september_pallet_1
+2026-09-11/141842_642433_2e6ca506,2026-09-11/141842_642433_2e6ca506/color.png,few,Chỉ còn 3 bao trên pallet gỗ; pallet bên cạnh vẫn đầy.,september_pallet_1
+2026-09-11/141848_303508_9da354d1,2026-09-11/141848_303508_9da354d1/color.png,few,"Chỉ còn 2 bao, hở nhiều đáy pallet.",september_pallet_1
+2026-09-11/141912_862496_b6bd837f,2026-09-11/141912_862496_b6bd837f/color.png,few,Chỉ còn 1 bao; cần phân biệt với chồng hàng lớn bên cạnh.,september_pallet_1
+2026-09-11/141926_658583_5aa357e0,2026-09-11/141926_658583_5aa357e0/color.png,empty,"Pallet gỗ mục tiêu rỗng, cạnh pallet CPE đầy.",september_pallet_1
+2026-09-11/142402_058118_bead4034,2026-09-11/142402_058118_bead4034/color.png,full,Pallet mục tiêu chuyển sang bao CPE; nhiều vùng hàng trong ảnh.,september_pallet_2
+2026-09-11/142952_977753_5ea29398,2026-09-11/142952_977753_5ea29398/color.png,full,Nhiều pallet với bao trắng/xanh; ánh sáng khác.,september_pallet_3
+2026-09-11/143342_865564_c12c56b1,2026-09-11/143342_865564_c12c56b1/color.png,full,"Pallet lệch/xoay, các chồng hàng đứng sát nhau.",september_pallet_3
+2026-09-11/143857_695505_85f22d37,2026-09-11/143857_695505_85f22d37/color.png,full,"Bao CABOT màu nâu, có chồng bao trắng và xanh bên cạnh.",september_pallet_4

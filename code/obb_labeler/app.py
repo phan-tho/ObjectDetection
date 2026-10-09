@@ -91,7 +91,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8766)
     parser.add_argument("--no-browser", action="store_true")
-    parser.add_argument("--output", type=Path, default=HERE / "results.nosync")
+    parser.add_argument("--output", type=Path, default=HERE / "results")
     args = parser.parse_args()
     images = json.loads((HERE / "selection.json").read_text(encoding="utf-8"))["images"]
     by_id = {image["id"]: image for image in images}

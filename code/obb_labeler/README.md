@@ -68,7 +68,7 @@ Mở lại sẽ bắt đầu ở ảnh chưa xác nhận đầu tiên. Mỗi ả
 đã kiểm tra riêng. Sửa một ảnh đã kiểm tra sẽ đưa ảnh về nháp và bỏ bản xuất
 YOLO dẫn xuất cho đến khi bạn xác nhận lại.
 
-Kết quả trong `code/obb_labeler/results.nosync/`:
+Kết quả trong `code/obb_labeler/results/`:
 
 - `annotations.json`: bản gốc, nháp và nhãn đã kiểm tra; lưu tâm, kích thước,
   góc, bốn góc theo pixel gốc, lớp, liên kết pallet, cờ mục tiêu và che khuất.

@@ -16,13 +16,13 @@ import numpy as np
 from augment import augment, bag_donors
 
 ROOT = Path(__file__).resolve().parents[2]
-ANNOTATIONS = ROOT / "code/obb_labeler/results.nosync/annotations.json"
+ANNOTATIONS = ROOT / "code/obb_labeler/results/annotations.json"
 NAMES = {0: "pallet_region", 1: "bag"}
 MAX_SIDE = 1280  # đủ cho imgsz ≤ 1280, đọc ảnh nhanh hơn PNG 1920×1080
 # Pallet phụ có bao thấy rõ nhưng chưa khoanh (README). Tô xám vùng đó và bỏ nhãn của nó,
 # để model không học "bao chưa có nhãn = nền".
-UNLABELED_SIDE_PALLETS = {"bao-tai.nosync/session_031", "bao-tai.nosync/session_043",
-                          "bao-tai.nosync/session_058"}
+UNLABELED_SIDE_PALLETS = {"bao-tai/session_031", "bao-tai/session_043",
+                          "bao-tai/session_058"}
 
 
 def mask_unlabeled(img, item):
@@ -71,7 +71,7 @@ def main():
                     help="augment v2: thêm dán bao rời, che khuất, màng co")
     args = ap.parse_args()
 
-    out = ROOT / "datasets.nosync" / args.name
+    out = ROOT / "datasets" / args.name
     if out.exists():
         shutil.rmtree(out)
     for split in ("train", "val"):
@@ -99,7 +99,7 @@ def main():
 
     counts = {"train": 0, "val": 0}
     for it, img, objects, is_val in samples:
-        stem = it["id"].replace("/", "__").replace(".nosync", "")
+        stem = it["id"].replace("/", "__")
         split = "val" if is_val else "train"
         write_sample(img, objects, stem, out / split)
         counts[split] += 1

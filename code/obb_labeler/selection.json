@@ -6,9 +6,9 @@
   },
   "images": [
     {
-      "id": "bao-tai.nosync/session_031",
-      "image_path": "bao-tai.nosync/session_031/session_031_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_031/session_031_frame_000001_depth.png",
+      "id": "bao-tai/session_031",
+      "image_path": "bao-tai/session_031/session_031_frame_000001_color.png",
+      "depth_path": "bao-tai/session_031/session_031_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -23,9 +23,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_043",
-      "image_path": "bao-tai.nosync/session_043/session_043_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_043/session_043_frame_000001_depth.png",
+      "id": "bao-tai/session_043",
+      "image_path": "bao-tai/session_043/session_043_frame_000001_color.png",
+      "depth_path": "bao-tai/session_043/session_043_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -41,9 +41,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_058",
-      "image_path": "bao-tai.nosync/session_058/session_058_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_058/session_058_frame_000001_depth.png",
+      "id": "bao-tai/session_058",
+      "image_path": "bao-tai/session_058/session_058_frame_000001_color.png",
+      "depth_path": "bao-tai/session_058/session_058_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -61,9 +61,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_062",
-      "image_path": "bao-tai.nosync/session_062/session_062_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_062/session_062_frame_000001_depth.png",
+      "id": "bao-tai/session_062",
+      "image_path": "bao-tai/session_062/session_062_frame_000001_color.png",
+      "depth_path": "bao-tai/session_062/session_062_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "empty",
@@ -77,9 +77,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_066",
-      "image_path": "bao-tai.nosync/session_066/session_066_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_066/session_066_frame_000001_depth.png",
+      "id": "bao-tai/session_066",
+      "image_path": "bao-tai/session_066/session_066_frame_000001_color.png",
+      "depth_path": "bao-tai/session_066/session_066_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -93,9 +93,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_068",
-      "image_path": "bao-tai.nosync/session_068/session_068_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_068/session_068_frame_000001_depth.png",
+      "id": "bao-tai/session_068",
+      "image_path": "bao-tai/session_068/session_068_frame_000001_color.png",
+      "depth_path": "bao-tai/session_068/session_068_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -110,9 +110,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_071",
-      "image_path": "bao-tai.nosync/session_071/session_071_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_071/session_071_frame_000001_depth.png",
+      "id": "bao-tai/session_071",
+      "image_path": "bao-tai/session_071/session_071_frame_000001_color.png",
+      "depth_path": "bao-tai/session_071/session_071_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -126,9 +126,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_077",
-      "image_path": "bao-tai.nosync/session_077/session_077_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_077/session_077_frame_000001_depth.png",
+      "id": "bao-tai/session_077",
+      "image_path": "bao-tai/session_077/session_077_frame_000001_color.png",
+      "depth_path": "bao-tai/session_077/session_077_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -143,9 +143,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_080",
-      "image_path": "bao-tai.nosync/session_080/session_080_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_080/session_080_frame_000001_depth.png",
+      "id": "bao-tai/session_080",
+      "image_path": "bao-tai/session_080/session_080_frame_000001_color.png",
+      "depth_path": "bao-tai/session_080/session_080_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -161,9 +161,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_084",
-      "image_path": "bao-tai.nosync/session_084/session_084_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_084/session_084_frame_000001_depth.png",
+      "id": "bao-tai/session_084",
+      "image_path": "bao-tai/session_084/session_084_frame_000001_color.png",
+      "depth_path": "bao-tai/session_084/session_084_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "partial",
@@ -181,9 +181,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "bao-tai.nosync/session_087",
-      "image_path": "bao-tai.nosync/session_087/session_087_frame_000001_color.png",
-      "depth_path": "bao-tai.nosync/session_087/session_087_frame_000001_depth.png",
+      "id": "bao-tai/session_087",
+      "image_path": "bao-tai/session_087/session_087_frame_000001_color.png",
+      "depth_path": "bao-tai/session_087/session_087_frame_000001_depth.png",
       "width": 1920,
       "height": 1080,
       "state": "partial",
@@ -198,9 +198,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/140624_459950_0019fdc8",
-      "image_path": "2026-09-11.nosync/140624_459950_0019fdc8/color.png",
-      "depth_path": "2026-09-11.nosync/140624_459950_0019fdc8/depth.png",
+      "id": "2026-09-11/140624_459950_0019fdc8",
+      "image_path": "2026-09-11/140624_459950_0019fdc8/color.png",
+      "depth_path": "2026-09-11/140624_459950_0019fdc8/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -215,9 +215,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/140915_016988_0089f392",
-      "image_path": "2026-09-11.nosync/140915_016988_0089f392/color.png",
-      "depth_path": "2026-09-11.nosync/140915_016988_0089f392/depth.png",
+      "id": "2026-09-11/140915_016988_0089f392",
+      "image_path": "2026-09-11/140915_016988_0089f392/color.png",
+      "depth_path": "2026-09-11/140915_016988_0089f392/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -232,9 +232,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141152_799859_184f51f4",
-      "image_path": "2026-09-11.nosync/141152_799859_184f51f4/color.png",
-      "depth_path": "2026-09-11.nosync/141152_799859_184f51f4/depth.png",
+      "id": "2026-09-11/141152_799859_184f51f4",
+      "image_path": "2026-09-11/141152_799859_184f51f4/color.png",
+      "depth_path": "2026-09-11/141152_799859_184f51f4/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -249,9 +249,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141439_259190_4d5d265d",
-      "image_path": "2026-09-11.nosync/141439_259190_4d5d265d/color.png",
-      "depth_path": "2026-09-11.nosync/141439_259190_4d5d265d/depth.png",
+      "id": "2026-09-11/141439_259190_4d5d265d",
+      "image_path": "2026-09-11/141439_259190_4d5d265d/color.png",
+      "depth_path": "2026-09-11/141439_259190_4d5d265d/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -267,9 +267,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141540_472257_a065de50",
-      "image_path": "2026-09-11.nosync/141540_472257_a065de50/color.png",
-      "depth_path": "2026-09-11.nosync/141540_472257_a065de50/depth.png",
+      "id": "2026-09-11/141540_472257_a065de50",
+      "image_path": "2026-09-11/141540_472257_a065de50/color.png",
+      "depth_path": "2026-09-11/141540_472257_a065de50/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -284,9 +284,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141820_608979_b104b99d",
-      "image_path": "2026-09-11.nosync/141820_608979_b104b99d/color.png",
-      "depth_path": "2026-09-11.nosync/141820_608979_b104b99d/depth.png",
+      "id": "2026-09-11/141820_608979_b104b99d",
+      "image_path": "2026-09-11/141820_608979_b104b99d/color.png",
+      "depth_path": "2026-09-11/141820_608979_b104b99d/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -301,9 +301,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141842_642433_2e6ca506",
-      "image_path": "2026-09-11.nosync/141842_642433_2e6ca506/color.png",
-      "depth_path": "2026-09-11.nosync/141842_642433_2e6ca506/depth.png",
+      "id": "2026-09-11/141842_642433_2e6ca506",
+      "image_path": "2026-09-11/141842_642433_2e6ca506/color.png",
+      "depth_path": "2026-09-11/141842_642433_2e6ca506/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "few",
@@ -319,9 +319,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141848_303508_9da354d1",
-      "image_path": "2026-09-11.nosync/141848_303508_9da354d1/color.png",
-      "depth_path": "2026-09-11.nosync/141848_303508_9da354d1/depth.png",
+      "id": "2026-09-11/141848_303508_9da354d1",
+      "image_path": "2026-09-11/141848_303508_9da354d1/color.png",
+      "depth_path": "2026-09-11/141848_303508_9da354d1/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "few",
@@ -337,9 +337,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141912_862496_b6bd837f",
-      "image_path": "2026-09-11.nosync/141912_862496_b6bd837f/color.png",
-      "depth_path": "2026-09-11.nosync/141912_862496_b6bd837f/depth.png",
+      "id": "2026-09-11/141912_862496_b6bd837f",
+      "image_path": "2026-09-11/141912_862496_b6bd837f/color.png",
+      "depth_path": "2026-09-11/141912_862496_b6bd837f/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "few",
@@ -353,9 +353,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/141926_658583_5aa357e0",
-      "image_path": "2026-09-11.nosync/141926_658583_5aa357e0/color.png",
-      "depth_path": "2026-09-11.nosync/141926_658583_5aa357e0/depth.png",
+      "id": "2026-09-11/141926_658583_5aa357e0",
+      "image_path": "2026-09-11/141926_658583_5aa357e0/color.png",
+      "depth_path": "2026-09-11/141926_658583_5aa357e0/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "empty",
@@ -369,9 +369,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/142402_058118_bead4034",
-      "image_path": "2026-09-11.nosync/142402_058118_bead4034/color.png",
-      "depth_path": "2026-09-11.nosync/142402_058118_bead4034/depth.png",
+      "id": "2026-09-11/142402_058118_bead4034",
+      "image_path": "2026-09-11/142402_058118_bead4034/color.png",
+      "depth_path": "2026-09-11/142402_058118_bead4034/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -385,9 +385,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/142952_977753_5ea29398",
-      "image_path": "2026-09-11.nosync/142952_977753_5ea29398/color.png",
-      "depth_path": "2026-09-11.nosync/142952_977753_5ea29398/depth.png",
+      "id": "2026-09-11/142952_977753_5ea29398",
+      "image_path": "2026-09-11/142952_977753_5ea29398/color.png",
+      "depth_path": "2026-09-11/142952_977753_5ea29398/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -403,9 +403,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/143342_865564_c12c56b1",
-      "image_path": "2026-09-11.nosync/143342_865564_c12c56b1/color.png",
-      "depth_path": "2026-09-11.nosync/143342_865564_c12c56b1/depth.png",
+      "id": "2026-09-11/143342_865564_c12c56b1",
+      "image_path": "2026-09-11/143342_865564_c12c56b1/color.png",
+      "depth_path": "2026-09-11/143342_865564_c12c56b1/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",
@@ -420,9 +420,9 @@
       "purpose": "seed_train"
     },
     {
-      "id": "2026-09-11.nosync/143857_695505_85f22d37",
-      "image_path": "2026-09-11.nosync/143857_695505_85f22d37/color.png",
-      "depth_path": "2026-09-11.nosync/143857_695505_85f22d37/depth.png",
+      "id": "2026-09-11/143857_695505_85f22d37",
+      "image_path": "2026-09-11/143857_695505_85f22d37/color.png",
+      "depth_path": "2026-09-11/143857_695505_85f22d37/depth.png",
       "width": 1920,
       "height": 1080,
       "state": "full",

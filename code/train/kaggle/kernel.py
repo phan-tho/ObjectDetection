@@ -2,7 +2,7 @@
 dự đoán ảnh chưa nhãn. Đẩy lên bằng code/train/kaggle/push.py; không chạy local.
 
 Input (dataset_sources): phanbth/bao-tai-1, phanbth/bao-tai-2, <user>/bao-tai-obb-code.
-Output (/kaggle/working): runs.nosync/ (weights, biểu đồ, results.jsonl, predict_*), logs/.
+Output (/kaggle/working): runs/ (weights, biểu đồ, results.jsonl, predict_*), logs/.
 """
 import queue
 import shutil
@@ -33,7 +33,7 @@ def find_dir(name):
 def setup():
     PROJ.mkdir(parents=True, exist_ok=True)
     # Ảnh gốc: link thư mục cha của một lượt chụp đã biết, đúng tên mà annotations.json dùng.
-    for link, probe in [("bao-tai.nosync", "session_031"), ("2026-09-11.nosync", "140624_459950_0019fdc8")]:
+    for link, probe in [("bao-tai", "session_031"), ("2026-09-11", "140624_459950_0019fdc8")]:
         target = PROJ / link
         if not target.exists():
             target.symlink_to(find_dir(probe).parent)
@@ -105,17 +105,17 @@ def main():
                  (f"{fold}_y26n_v2", ["--data", f"fold_{fold}_v2", *y26]),
                  (f"{fold}_y11n_v2", ["--data", f"fold_{fold}_v2", *y11]),
                  (f"{fold}_y26n_v2_960", ["--data", f"fold_{fold}_v2", *y26, "--imgsz", "960"])]
-    # Model cuối: cả 25 ảnh (val = train, chỉ để Ultralytics chạy; không phải chỉ số thật).
-    runs += [("all_y26n_v2", ["--data", "all_v2", *y26, "--epochs", "100"]),
-             ("all_y26n_v2_960", ["--data", "all_v2", *y26, "--epochs", "100", "--imgsz", "960"])]
+    # Model cuối: cả 25 ảnh, không validate (không còn ảnh độc lập); dùng last.pt.
+    runs += [("all_y26n_v2", ["--data", "all_v2", *y26, "--epochs", "100", "--no-val"]),
+             ("all_y26n_v2_960", ["--data", "all_v2", *y26, "--epochs", "100", "--imgsz", "960", "--no-val"])]
     train_all(runs)
     print(f"train xong sau {time.time() - t0:.0f}s", flush=True)
     for name, imgsz in [("all_y26n_v2", "640"), ("all_y26n_v2_960", "960")]:
-        weights = PROJ / "runs.nosync" / name / "weights" / "best.pt"
+        weights = PROJ / "runs" / name / "weights" / "last.pt"
         if weights.exists():
             sh(["code/train/predict.py", "--weights", str(weights), "--imgsz", imgsz], f"predict_{name}")
-    shutil.copytree(PROJ / "runs.nosync", WORK / "runs.nosync", dirs_exist_ok=True)
-    print(open(WORK / "runs.nosync" / "results.jsonl").read() if (WORK / "runs.nosync/results.jsonl").exists() else "")
+    shutil.copytree(PROJ / "runs", WORK / "runs", dirs_exist_ok=True)
+    print(open(WORK / "runs" / "results.jsonl").read() if (WORK / "runs/results.jsonl").exists() else "")
     print(f"xong sau {time.time() - t0:.0f}s", flush=True)
 
 

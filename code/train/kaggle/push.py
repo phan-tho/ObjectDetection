@@ -1,14 +1,17 @@
 """Đẩy code + nhãn lên Kaggle (dataset private) rồi chạy kernel GPU.
 
-    .venv/Scripts/python code/train/kaggle/push.py            # upload code + chạy kernel
-    .venv/Scripts/python code/train/kaggle/push.py --status   # xem trạng thái
-    .venv/Scripts/python code/train/kaggle/push.py --pull     # tải output về runs.nosync/kaggle/
+    .venv/Scripts/python code/train/kaggle/push.py -a tuananhpham29            # upload code + chạy kernel
+    .venv/Scripts/python code/train/kaggle/push.py -a tuananhpham29 --status   # xem trạng thái
+    .venv/Scripts/python code/train/kaggle/push.py -a tuananhpham29 --pull     # tải output về runs/kaggle/
 
-Dataset/kernel đều private, thuộc tài khoản trong ~/.kaggle. Ảnh gốc lấy trực tiếp từ
+`-a` chọn tài khoản trong .kaggle/tokens.json của dự án (gitignore, dạng
+[{"username": ..., "token": "KGAT_..."}]); bỏ `-a` thì dùng ~/.kaggle. Hết quota GPU thì
+đổi sang tài khoản khác. Dataset/kernel đều private. Ảnh gốc lấy trực tiếp từ
 phanbth/bao-tai-1, phanbth/bao-tai-2 nên không upload lại.
 """
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -21,14 +24,23 @@ HERE = Path(__file__).resolve().parent
 KAGGLE = str(Path(sys.executable).with_name("kaggle.exe" if sys.platform == "win32" else "kaggle"))
 FILES = ["code/train/augment.py", "code/train/build_dataset.py", "code/train/train.py",
          "code/train/predict.py", "code/obb_labeler/app.py", "code/obb_labeler/selection.json",
-         "code/obb_labeler/results.nosync/annotations.json",
-         "code/image_sorter/results.nosync/labels.csv"]
+         "code/obb_labeler/results/annotations.json",
+         "code/image_sorter/results/labels.csv"]
 SLUG_DATA = "bao-tai-obb-code"
 SLUG_KERNEL = "bao-tai-obb-train"
+TOKENS = ROOT / ".kaggle" / "tokens.json"
+ENV = dict(os.environ)
+
+
+def use_account(name):
+    accounts = {a["username"]: a["token"] for a in json.loads(TOKENS.read_text(encoding="utf-8"))}
+    if name not in accounts:
+        raise SystemExit(f"Không có tài khoản {name} trong {TOKENS}: {', '.join(accounts)}")
+    ENV["KAGGLE_API_TOKEN"] = accounts[name]
 
 
 def kaggle(*args, check=True, capture=False):
-    return subprocess.run([KAGGLE, *args], check=check, text=True, capture_output=capture)
+    return subprocess.run([KAGGLE, *args], check=check, text=True, capture_output=capture, env=ENV)
 
 
 def username():
@@ -76,16 +88,20 @@ def push_kernel(user, tmp):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("-a", "--account", help="username trong .kaggle/tokens.json")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--pull", action="store_true")
     ap.add_argument("--kernel-only", action="store_true", help="không upload lại code")
     args = ap.parse_args()
+    if args.account:
+        use_account(args.account)
     user = username()
+    print(f"Tài khoản Kaggle: {user}")
     ref = f"{user}/{SLUG_KERNEL}"
     if args.status:
         kaggle("kernels", "status", ref)
     elif args.pull:
-        out = ROOT / "runs.nosync" / "kaggle"
+        out = ROOT / "runs" / "kaggle"
         out.mkdir(parents=True, exist_ok=True)
         kaggle("kernels", "output", ref, "-p", str(out), "-o")
         print(f"-> {out}")

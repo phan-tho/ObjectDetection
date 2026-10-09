@@ -17,8 +17,8 @@ uv pip install --python .venv/Scripts/python.exe ultralytics kaggle
 ```
 
 Cần token Kaggle (`~/.kaggle/access_token` hoặc `kaggle.json`). Lưu đúng tên mà
-labeler/sorter dùng: `phanbth/bao-tai-1` → `bao-tai.nosync/`, `phanbth/bao-tai-2` →
-`2026-09-11.nosync/`. Cả hai đã trong `.gitignore`.
+labeler/sorter dùng: `phanbth/bao-tai-1` → `bao-tai/`, `phanbth/bao-tai-2` →
+`2026-09-11/`. Cả hai đã trong `.gitignore`.
 
 ## 2. Dựng dataset
 
@@ -35,7 +35,7 @@ labeler/sorter dùng: `phanbth/bao-tai-1` → `bao-tai.nosync/`, `phanbth/bao-ta
 - Ảnh thu về cạnh dài 1280 px, lưu JPEG; nhãn `class x1 y1 … x4 y4` chuẩn hóa.
 - `session_031/043/058`: pallet phụ có bao chưa khoanh được tô xám và bỏ nhãn, để model
   không học "bao chưa nhãn = nền".
-- Kết quả trong `datasets.nosync/<name>/` (gitignore), dựng lại được bất cứ lúc nào.
+- Kết quả trong `datasets/<name>/` (gitignore), dựng lại được bất cứ lúc nào.
 
 ### Augment
 
@@ -61,17 +61,17 @@ mosaic (tắt 10 epoch cuối), HSV nhẹ.
 ```
 
 Mặc định 60 epoch, imgsz 640, batch 8 (~13 phút trên RTX 3050 4GB). Model, log và ảnh
-val trong `runs.nosync/<name>/`; chỉ số val của `best.pt` được nối vào
-`runs.nosync/results.jsonl`.
+val trong `runs/<name>/`; chỉ số val của `best.pt` được nối vào
+`runs/results.jsonl`.
 
 ## 4. Dự đoán ảnh chưa nhãn
 
 ```sh
-.venv/Scripts/python code/train/predict.py --weights runs.nosync/<run>/weights/best.pt
+.venv/Scripts/python code/train/predict.py --weights runs/<run>/weights/best.pt
 ```
 
 Chạy trên các lượt "dùng được" trong `image_sorter` chưa có trong bộ 25 ảnh. Xuất
-`runs.nosync/predict_<run>/predictions.json` (cùng schema box với `annotations.json`,
+`runs/predict_<run>/predictions.json` (cùng schema box với `annotations.json`,
 thêm `conf`) và `vis/*.jpg` để rà nhanh.
 
 ## Chạy trên Kaggle
@@ -79,7 +79,7 @@ thêm `conf`) và `vis/*.jpg` để rà nhanh.
 ```sh
 .venv/Scripts/python code/train/kaggle/push.py            # upload code + nhãn, chạy kernel GPU
 .venv/Scripts/python code/train/kaggle/push.py --status
-.venv/Scripts/python code/train/kaggle/push.py --pull     # output về runs.nosync/kaggle/
+.venv/Scripts/python code/train/kaggle/push.py --pull     # output về runs/kaggle/
 ```
 
 Dùng tài khoản trong `~/.kaggle`. Code + `annotations.json` + `labels.csv` được upload thành
