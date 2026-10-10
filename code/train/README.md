@@ -23,14 +23,14 @@ labeler/sorter dùng: `phanbth/bao-tai-1` → `bao-tai/`, `phanbth/bao-tai-2` �
 ## 2. Dựng dataset
 
 ```sh
-.venv/Scripts/python code/train/build_dataset.py --name fold_red_v2 \
-    --val-groups august_red september_pallet_4 --aug 15 --scene
+.venv/Scripts/python code/train/build_dataset.py --name red_v3 \
+    --val-groups august_red september_pallet_4 --aug 30 --heavy
 ```
 
 - Chia theo `sequence_group` (các frame cùng chuỗi gần như giống nhau, không được
   nằm cả ở train lẫn val). Val chỉ là ảnh gốc, không augment.
 - `--aug N`: N bản augment offline cho mỗi ảnh train. `--copies-only`: nhân bản ảnh
-  gốc (baseline cùng số bước). `--scene`: bật augment v2. Bỏ `--val-groups` để đưa
+  gốc (baseline cùng số bước). `--scene`: bật augment v2. `--heavy`: bật v3 (kèm v2). Bỏ `--val-groups` để đưa
   cả 25 ảnh vào train cho model cuối.
 - Ảnh thu về cạnh dài 1280 px, lưu JPEG; nhãn `class x1 y1 … x4 y4` chuẩn hóa.
 - `session_031/043/058`: pallet phụ có bao chưa khoanh được tô xám và bỏ nhãn, để model
@@ -39,7 +39,7 @@ labeler/sorter dùng: `phanbth/bao-tai-1` → `bao-tai/`, `phanbth/bao-tai-2` �
 
 ### Augment
 
-Offline (`augment.py`, nhãn giữ nguyên trừ khi dán bao):
+Offline (`augment.py`; nhãn giữ nguyên trừ khi dán bao hoặc biến đổi hình học v3):
 
 | Nhóm | Phép | Mô phỏng |
 |---|---|---|
@@ -49,6 +49,9 @@ Offline (`augment.py`, nhãn giữ nguyên trừ khi dán bao):
 | Cảnh (v2, `--scene`) | `paste_bags` | Bao rời trên nền: cắt bao thật từ ảnh train, dán với kích thước 0.7–1.25×, góc tùy ý, có bóng, thêm nhãn bao |
 | | `arm_occluder` | Tay người/cánh tay robot/ống che một phần bao |
 | | `stretch_wrap` | Màng co nilon + dây đai quấn pallet |
+| Hình học (v3, `--heavy`, ≤1 phép) | `crop_zoom`, `zoom_out`, `rotate_scene`, `tilt` | Pallet bị cắt ở mép ảnh, bao nhỏ (camera cao), pallet nằm chéo, camera nghiêng. Nhãn cắt theo khung ảnh qua `clip_objects`: giữ hình chữ nhật bao phần còn thấy; bao còn <30% (pallet <15%) thì tô xám, bỏ nhãn. Chỗ trống lấp bằng nền giả, không phản chiếu ảnh |
+| Mẫu âm (v3) | `paste_clutter` | Dán vật nền (cửa, kệ, người, carton) cắt từ vùng không có nhãn của ảnh train, không thêm nhãn: giảm báo nhầm ngoài pallet |
+| Ảnh xấu (v3) | `stripes`, `defocus`, `grayscale`, `channel_shuffle`, `cutout` | Sọc nhấp nháy đèn LED/vạch lỗi cảm biến, mất nét, camera đen trắng, sai kênh màu, vật lạ che nhỏ |
 
 Online (Ultralytics, trong `train.py`): xoay 0–180° (camera nhìn từ trên), lật ngang/dọc,
 scale 0.5–1.5 (bao to/nhỏ, camera cao/thấp), dịch 15% (pallet lệch), perspective nhẹ,
@@ -64,6 +67,16 @@ Mặc định 60 epoch, imgsz 640, batch 8 (~13 phút trên RTX 3050 4GB). Model
 val trong `runs/<name>/`; chỉ số val của `best.pt` được nối vào
 `runs/results.jsonl`.
 
+Phân tích lỗi trên val (bỏ sót, báo nhầm, box lệch theo đặc điểm nhãn):
+
+```sh
+.venv/Scripts/python code/train/analyze_errors.py \
+    --pair runs/red_v1/weights/best.pt red_v1 --pair runs/sep3_v1/weights/best.pt sep3_v1
+```
+
+Xuất `runs/errors/summary.txt`, `objects.csv` và `vis/` (xanh = đúng, đỏ = bỏ sót, vàng = box
+lệch IoU < 0.75, cam = báo nhầm).
+
 ## 4. Dự đoán ảnh chưa nhãn
 
 ```sh
@@ -77,15 +90,19 @@ thêm `conf`) và `vis/*.jpg` để rà nhanh.
 ## Chạy trên Kaggle
 
 ```sh
-.venv/Scripts/python code/train/kaggle/push.py            # upload code + nhãn, chạy kernel GPU
-.venv/Scripts/python code/train/kaggle/push.py --status
-.venv/Scripts/python code/train/kaggle/push.py --pull     # output về runs/kaggle/
+.venv/Scripts/python code/train/kaggle/push.py -a <user>            # upload code + nhãn, chạy kernel GPU
+.venv/Scripts/python code/train/kaggle/push.py -a <user> --status
+.venv/Scripts/python code/train/kaggle/push.py -a <user> --pull     # output về runs/kaggle/
 ```
 
-Dùng tài khoản trong `~/.kaggle`. Code + `annotations.json` + `labels.csv` được upload thành
-dataset private `<user>/bao-tai-obb-code`; ảnh lấy thẳng từ `phanbth/bao-tai-1/2`.
-Kernel `kaggle/kernel.py` dựng mọi dataset, chạy các thí nghiệm song song trên các GPU,
-train model cuối trên cả 25 ảnh rồi dự đoán ảnh chưa nhãn. Cần quota GPU (30 giờ/tuần).
+`-a` chọn tài khoản trong `.kaggle/tokens.json` của dự án (gitignore); bỏ `-a` thì dùng
+`~/.kaggle`. Mỗi tài khoản có quota GPU 30 giờ/tuần; hết thì đổi tài khoản. Code +
+`annotations.json` + `labels.csv` được upload thành dataset private `<user>/bao-tai-obb-code`;
+ảnh lấy thẳng từ `phanbth/bao-tai-1/2`.
+
+Kernel `kaggle/kernel.py`: dựng dataset cho 4 fold theo nhóm cảnh (phủ cả 25 ảnh) × các cấu
+hình (không augment / v1 / v3 / v3 ảnh 960), train song song trên 2 GPU, phân tích lỗi v1 và v3,
+train model cuối trên cả 25 ảnh, dự đoán ảnh chưa nhãn. Bảng tổng hợp ở `runs/summary.txt`.
 
 ## Quy ước góc
 

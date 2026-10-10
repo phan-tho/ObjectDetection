@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 KAGGLE = str(Path(sys.executable).with_name("kaggle.exe" if sys.platform == "win32" else "kaggle"))
 FILES = ["code/train/augment.py", "code/train/build_dataset.py", "code/train/train.py",
-         "code/train/predict.py", "code/obb_labeler/app.py", "code/obb_labeler/selection.json",
+         "code/train/predict.py", "code/train/analyze_errors.py", "code/obb_labeler/app.py",
+         "code/obb_labeler/selection.json",
          "code/obb_labeler/results/annotations.json",
          "code/image_sorter/results/labels.csv"]
 SLUG_DATA = "bao-tai-obb-code"

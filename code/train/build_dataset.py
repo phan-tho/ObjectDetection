@@ -13,7 +13,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from augment import augment, bag_donors
+from augment import augment, bag_donors, clutter_donors
 
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATIONS = ROOT / "code/obb_labeler/results/annotations.json"
@@ -69,6 +69,8 @@ def main():
                     help="nhân bản ảnh gốc thay vì augment (baseline cùng số bước train)")
     ap.add_argument("--scene", action="store_true",
                     help="augment v2: thêm dán bao rời, che khuất, màng co")
+    ap.add_argument("--heavy", action="store_true",
+                    help="augment v3 (kèm v2): cắt/zoom/xoay/nghiêng có cắt nhãn, mẫu âm, sọc, mất nét")
     args = ap.parse_args()
 
     out = ROOT / "datasets" / args.name
@@ -96,6 +98,8 @@ def main():
         samples.append((it, img, objects, it["sequence_group"] in args.val_groups))
     # Bao để dán chỉ lấy từ ảnh train, tránh rò rỉ val.
     donors = [d for it, img, objects, is_val in samples if not is_val for d in bag_donors(img, objects)]
+    clutter = [c for it, img, objects, is_val in samples if not is_val
+               for c in clutter_donors(img, objects, rng)] if args.heavy else None
 
     counts = {"train": 0, "val": 0}
     for it, img, objects, is_val in samples:
@@ -109,7 +113,8 @@ def main():
             if args.copies_only:
                 sample, objs = img, objects
             else:
-                sample, objs = augment(img.copy(), objects, rng, donors=donors, scene=args.scene)
+                sample, objs = augment(img, objects, rng, donors=donors, scene=args.scene or args.heavy,
+                                       heavy=args.heavy, clutter=clutter)
             write_sample(sample, objs, f"{stem}__aug{k:02d}", out / split)
             counts[split] += 1
 

@@ -4,12 +4,14 @@ dự đoán ảnh chưa nhãn. Đẩy lên bằng code/train/kaggle/push.py; kh�
 Input (dataset_sources): phanbth/bao-tai-1, phanbth/bao-tai-2, <user>/bao-tai-obb-code.
 Output (/kaggle/working): runs/ (weights, biểu đồ, results.jsonl, predict_*), logs/.
 """
+import json
 import queue
 import shutil
 import subprocess
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", "ultralytics"], check=True)
@@ -19,8 +21,16 @@ INPUT = Path("/kaggle/input")
 WORK = Path("/kaggle/working")
 PROJ = Path("/tmp/proj")  # ngoài /kaggle/working để dataset trung gian không vào output
 LOGS = WORK / "logs"
-FOLDS = {"red": ["august_red", "september_pallet_4"],
-         "sep3": ["september_pallet_3", "september_pallet_2"]}
+# 4 fold theo nhóm cảnh, phủ cả 25 ảnh: mỗi ảnh làm val đúng một lần.
+FOLDS = {"red": ["august_red", "september_pallet_4"],          # 4 ảnh: bao đỏ, bao lẫn loại
+         "sep3": ["september_pallet_3", "september_pallet_2"],  # 3 ảnh: nhiều pallet, màng co
+         "green": ["august_green_and_empty"],                   # 8 ảnh: bao xanh, vơi, rỗng
+         "sep1": ["september_pallet_1"]}                         # 10 ảnh: chuỗi tháo hàng đến rỗng
+# (tên cấu hình, tham số build_dataset, tham số train)
+CONFIGS = [("base", ["--aug", "15", "--copies-only"], []),
+           ("v1", ["--aug", "15"], []),
+           ("v3", ["--aug", "30", "--heavy"], []),
+           ("v3_960", None, ["--imgsz", "960"])]  # dùng lại dataset v3
 
 
 def find_dir(name):
@@ -56,18 +66,12 @@ def sh(args, log):
 
 
 def build_all():
-    jobs = []
-    for fold, groups in FOLDS.items():
-        base = ["code/train/build_dataset.py", "--val-groups", *groups, "--aug", "15"]
-        jobs += [(base + ["--name", f"fold_{fold}_base", "--copies-only"], f"build_{fold}_base"),
-                 (base + ["--name", f"fold_{fold}_aug"], f"build_{fold}_aug"),
-                 (base + ["--name", f"fold_{fold}_v2", "--scene"], f"build_{fold}_v2")]
-    jobs.append((["code/train/build_dataset.py", "--name", "all_v2", "--aug", "20", "--scene"], "build_all_v2"))
-    threads = [threading.Thread(target=sh, args=j) for j in jobs]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
+    jobs = [(["code/train/build_dataset.py", "--name", f"{fold}_{cfg}", "--val-groups", *groups, *bargs],
+             f"build_{fold}_{cfg}")
+            for fold, groups in FOLDS.items() for cfg, bargs, _ in CONFIGS if bargs is not None]
+    jobs.append((["code/train/build_dataset.py", "--name", "all_v3", "--aug", "30", "--heavy"], "build_all_v3"))
+    with ThreadPoolExecutor(4) as pool:  # Kaggle có 4 CPU
+        list(pool.map(lambda j: sh(*j), jobs))
 
 
 def train_all(runs):
@@ -92,30 +96,54 @@ def train_all(runs):
         t.join()
 
 
+def summarize():
+    """Bảng mAP50-95 theo cấu hình x fold, trung bình theo fold và theo số ảnh val."""
+    path = PROJ / "runs" / "results.jsonl"
+    if not path.exists():
+        return ""
+    res = {r["run"]: r for r in map(json.loads, path.read_text().splitlines())}
+    n_val = {f: len(list((PROJ / "datasets" / f"{f}_v1" / "val" / "images").glob("*.jpg"))) for f in FOLDS}
+    lines = ["config | " + " | ".join(f"{f}({n_val[f]})" for f in FOLDS) + " | mean | weighted | bag | pallet"]
+    for cfg, _, _ in CONFIGS:
+        rs = [res.get(f"{f}_{cfg}") for f in FOLDS]
+        if not all(rs):
+            continue
+        m = [r["mAP50-95"] for r in rs]
+        w = sum(v * n_val[f] for v, f in zip(m, FOLDS)) / sum(n_val.values())
+        bag = sum(r["per_class_mAP50-95"]["bag"] for r in rs) / len(rs)
+        pal = sum(r["per_class_mAP50-95"]["pallet_region"] for r in rs) / len(rs)
+        lines.append(f"{cfg} | " + " | ".join(f"{v:.3f}" for v in m) + f" | {sum(m) / len(m):.3f} | {w:.3f}"
+                     f" | {bag:.3f} | {pal:.3f}")
+    return "\n".join(lines)
+
+
 def main():
     t0 = time.time()
     setup()
     build_all()
     print(f"build xong sau {time.time() - t0:.0f}s", flush=True)
-    y26, y11 = ["--model", "yolo26n-obb.pt"], ["--model", "yolo11n-obb.pt"]
     runs = []
     for fold in FOLDS:
-        runs += [(f"{fold}_y26n_base", ["--data", f"fold_{fold}_base", *y26]),
-                 (f"{fold}_y26n_aug", ["--data", f"fold_{fold}_aug", *y26]),
-                 (f"{fold}_y26n_v2", ["--data", f"fold_{fold}_v2", *y26]),
-                 (f"{fold}_y11n_v2", ["--data", f"fold_{fold}_v2", *y11]),
-                 (f"{fold}_y26n_v2_960", ["--data", f"fold_{fold}_v2", *y26, "--imgsz", "960"])]
+        for cfg, bargs, targs in CONFIGS:
+            data = f"{fold}_{cfg if bargs is not None else 'v3'}"
+            runs.append((f"{fold}_{cfg}", ["--data", data, "--model", "yolo26n-obb.pt", *targs]))
     # Model cuối: cả 25 ảnh, không validate (không còn ảnh độc lập); dùng last.pt.
-    runs += [("all_y26n_v2", ["--data", "all_v2", *y26, "--epochs", "100", "--no-val"]),
-             ("all_y26n_v2_960", ["--data", "all_v2", *y26, "--epochs", "100", "--imgsz", "960", "--no-val"])]
+    final = ["--data", "all_v3", "--model", "yolo26n-obb.pt", "--epochs", "100", "--no-val"]
+    runs += [("all_v3", final), ("all_v3_960", final + ["--imgsz", "960"])]
     train_all(runs)
     print(f"train xong sau {time.time() - t0:.0f}s", flush=True)
-    for name, imgsz in [("all_y26n_v2", "640"), ("all_y26n_v2_960", "960")]:
+    # Phân tích lỗi trên val của từng fold, so v1 với v3.
+    for cfg in ("v1", "v3"):
+        pairs = [a for f in FOLDS for a in ("--pair", f"runs/{f}_{cfg}/weights/best.pt", f"{f}_{cfg}")]
+        sh(["code/train/analyze_errors.py", *pairs, "--out", f"runs/errors_{cfg}"], f"errors_{cfg}")
+    for name, imgsz in [("all_v3", "640"), ("all_v3_960", "960")]:
         weights = PROJ / "runs" / name / "weights" / "last.pt"
         if weights.exists():
             sh(["code/train/predict.py", "--weights", str(weights), "--imgsz", imgsz], f"predict_{name}")
+    table = summarize()
+    (PROJ / "runs" / "summary.txt").write_text(table)
     shutil.copytree(PROJ / "runs", WORK / "runs", dirs_exist_ok=True)
-    print(open(WORK / "runs" / "results.jsonl").read() if (WORK / "runs/results.jsonl").exists() else "")
+    print(table)
     print(f"xong sau {time.time() - t0:.0f}s", flush=True)
 
 

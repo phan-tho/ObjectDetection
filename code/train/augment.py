@@ -1,7 +1,8 @@
-"""Augment quang học offline cho ảnh pallet/bao nhìn từ trên xuống.
+"""Augment offline cho ảnh pallet/bao nhìn từ trên xuống.
 
-Chỉ đổi giá trị điểm ảnh, không đổi hình học, nên nhãn OBB giữ nguyên. Biến đổi
-hình học (xoay, lật, scale, dịch, mosaic) để Ultralytics làm online lúc train.
+v1 chỉ đổi giá trị điểm ảnh (nhãn giữ nguyên); v2 (scene) thêm dán bao, che khuất,
+màng co; v3 (heavy) thêm biến đổi hình học có cắt nhãn theo khung ảnh, mẫu âm, sọc,
+mất nét. Ultralytics vẫn xoay/lật/scale/mosaic online lúc train.
 
 Mỗi biến đổi mô phỏng một tình huống thật ở kho:
 - recolor_bags: bao loại khác màu. Cả pallet thường cùng một loại bao, nên mỗi ảnh
@@ -31,19 +32,25 @@ def bag_mask(img, polys, shrink=0.92, color_tol=38.0):
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB).astype(np.float32)
     mask = np.zeros((h, w), np.float32)
     for poly in polys:
-        c = poly.mean(0)
-        inner = ((poly - c) * shrink + c).astype(np.int32)
-        m = np.zeros((h, w), np.uint8)
-        cv2.fillPoly(m, [inner], 1)
-        core = ((poly - c) * 0.5 + c).astype(np.int32)
-        mc = np.zeros((h, w), np.uint8)
-        cv2.fillPoly(mc, [core], 1)
+        # Chỉ tính trong khung bao quanh box (nhanh hơn nhiều so với tính cả ảnh mỗi bao).
+        x0, y0 = np.maximum(np.floor(poly.min(0)).astype(int) - 12, 0)
+        x1, y1 = np.minimum(np.ceil(poly.max(0)).astype(int) + 12, [w, h])
+        if x1 - x0 < 4 or y1 - y0 < 4:
+            continue
+        local = poly - [x0, y0]
+        c = local.mean(0)
+        m = np.zeros((y1 - y0, x1 - x0), np.uint8)
+        cv2.fillPoly(m, [((local - c) * shrink + c).astype(np.int32)], 1)
+        mc = np.zeros_like(m)
+        cv2.fillPoly(mc, [((local - c) * 0.5 + c).astype(np.int32)], 1)
         if mc.sum() < 20:
             continue
-        ref = np.median(lab[mc.astype(bool)], axis=0)
+        roi = lab[y0:y1, x0:x1]
+        ref = np.median(roi[mc.astype(bool)], axis=0)
         # Làm mượt khoảng cách màu trước khi so ngưỡng để mask không lốm đốm theo vân vải.
-        dist = cv2.GaussianBlur(np.linalg.norm(lab - ref, axis=2), (0, 0), 4)
-        mask = np.maximum(mask, m * np.clip((color_tol * 1.5 - dist) / (color_tol * 0.5), 0, 1))
+        dist = cv2.GaussianBlur(np.linalg.norm(roi - ref, axis=2), (0, 0), 4)
+        mask[y0:y1, x0:x1] = np.maximum(mask[y0:y1, x0:x1],
+                                        m * np.clip((color_tol * 1.5 - dist) / (color_tol * 0.5), 0, 1))
     # Làm mềm biên để không lộ đường cắt.
     return cv2.GaussianBlur(mask, (0, 0), 3)
 
@@ -282,25 +289,233 @@ def stretch_wrap(img, objects, rng):
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
+# ---- Augment v3: nhắm vào lỗi thấy trên val (analyze_errors.py) ----
+# Bao cắt ở mép ảnh lỗi 100%, bao nhỏ <1% ảnh lỗi 90%, báo nhầm cửa/kệ/áo ngoài pallet.
+
+GRAY = 114  # màu tô vùng không còn nhãn (giống letterbox của YOLO)
+MIN_VISIBLE = {0: 0.15, 1: 0.3}  # phần còn thấy tối thiểu để giữ nhãn (pallet / bao)
+
+
+def clip_objects(img, objects):
+    """Cắt mỗi OBB theo khung ảnh; nhãn mới = hình chữ nhật nhỏ nhất bao phần còn thấy
+    (đúng quy ước gán nhãn: chỉ khoanh phần nhìn thấy). Bao còn quá ít thì tô xám và bỏ
+    nhãn, để model không học "bao không nhãn = nền"."""
+    h, w = img.shape[:2]
+    frame = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+    kept = []
+    for o in objects:
+        poly = np.float32(o["corners"])
+        full = cv2.contourArea(poly)
+        inter, pts = cv2.intersectConvexConvex(poly, frame)
+        if full <= 0 or inter <= 1 or pts is None:
+            continue
+        if inter / full < MIN_VISIBLE[o["class_id"]]:
+            cv2.fillPoly(img, [pts.reshape(-1, 2).astype(np.int32)], (GRAY, GRAY, GRAY))
+            continue
+        if inter / full > 0.98:
+            kept.append(o)
+            continue
+        box = cv2.boxPoints(cv2.minAreaRect(pts.reshape(-1, 2)))
+        kept.append({**o, "corners": box.tolist(), "truncated": True})
+    return img, kept
+
+
+def floor_texture(img, shape, rng):
+    """Nền giả (sàn kho) để lấp chỗ trống sau khi xoay/thu nhỏ; không dùng ảnh phản chiếu
+    vì sẽ sinh bao không có nhãn."""
+    border = np.concatenate([img[:20].reshape(-1, 3), img[-20:].reshape(-1, 3)])
+    base = np.median(border, 0) * rng.uniform(0.7, 1.1)
+    tex = base + rng.normal(0, 18, (shape[0] // 8 + 1, shape[1] // 8 + 1, 3))
+    tex = cv2.resize(tex.astype(np.float32), (shape[1], shape[0]), interpolation=cv2.INTER_CUBIC)
+    return np.clip(tex + rng.normal(0, 6, (shape[0], shape[1], 3)), 0, 255).astype(np.uint8)
+
+
+def warp(img, objects, M, rng):
+    """Áp ma trận 3x3 cho ảnh và 4 góc mỗi box, lấp nền, rồi cắt nhãn theo khung ảnh."""
+    h, w = img.shape[:2]
+    out = cv2.warpPerspective(img, M, (w, h), flags=cv2.INTER_LINEAR, borderValue=0)
+    valid = cv2.warpPerspective(np.ones((h, w), np.float32), M, (w, h))[..., None]
+    out = (out * valid + floor_texture(img, (h, w), rng) * (1 - valid)).astype(np.uint8)
+    moved = []
+    for o in objects:
+        pts = cv2.perspectiveTransform(np.float32(o["corners"])[None], M)[0]
+        # Phối cảnh làm hình chữ nhật thành tứ giác: lấy hình chữ nhật nhỏ nhất bao nó.
+        moved.append({**o, "corners": cv2.boxPoints(cv2.minAreaRect(pts)).tolist()})
+    return clip_objects(out, moved)
+
+
+def crop_zoom(img, objects, rng):
+    """Phóng to một vùng: pallet bị cắt ở mép ảnh, bao to hơn (camera thấp/lệch)."""
+    h, w = img.shape[:2]
+    s = rng.uniform(0.5, 0.85)
+    x0, y0 = rng.uniform(0, w * (1 - s)), rng.uniform(0, h * (1 - s))
+    M = np.array([[1 / s, 0, -x0 / s], [0, 1 / s, -y0 / s], [0, 0, 1]])
+    return warp(img, objects, M, rng)
+
+
+def zoom_out(img, objects, rng):
+    """Thu nhỏ cả cảnh: bao nhỏ (camera cao, pallet xa)."""
+    h, w = img.shape[:2]
+    s = rng.uniform(0.45, 0.8)
+    tx, ty = rng.uniform(0, w * (1 - s)), rng.uniform(0, h * (1 - s))
+    M = np.array([[s, 0, tx], [0, s, ty], [0, 0, 1]])
+    return warp(img, objects, M, rng)
+
+
+def rotate_scene(img, objects, rng):
+    """Xoay cả ảnh góc bất kỳ quanh một điểm gần tâm: pallet nằm chéo, góc bị cắt khỏi khung."""
+    h, w = img.shape[:2]
+    c = (w / 2 + rng.uniform(-0.15, 0.15) * w, h / 2 + rng.uniform(-0.15, 0.15) * h)
+    M = np.vstack([cv2.getRotationMatrix2D(c, rng.uniform(-180, 180), rng.uniform(0.8, 1.15)), [0, 0, 1]])
+    return warp(img, objects, M, rng)
+
+
+def tilt(img, objects, rng):
+    """Camera không vuông góc sàn: phối cảnh nhẹ (lệch mỗi góc tới 8% kích thước)."""
+    h, w = img.shape[:2]
+    src = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+    dst = (src + rng.uniform(-0.08, 0.08, (4, 2)) * [w, h]).astype(np.float32)
+    return warp(img, objects, cv2.getPerspectiveTransform(src, dst), rng)
+
+
+GEOMETRIC = [(crop_zoom, 0.3), (zoom_out, 0.2), (rotate_scene, 0.25), (tilt, 0.25)]
+
+
+def clutter_donors(img, objects, rng, n=6):
+    """Mẫu âm: cắt vùng không chạm nhãn nào (cửa, kệ, người, thùng carton...)."""
+    h, w = img.shape[:2]
+    busy = np.zeros((h, w), np.uint8)
+    for o in objects:
+        cv2.fillPoly(busy, [np.array(o["corners"], np.int32)], 1)
+    busy = cv2.dilate(busy, np.ones((25, 25), np.uint8))
+    busy |= (np.abs(img.astype(int) - GRAY).sum(2) < 6).astype(np.uint8)  # vùng đã tô xám
+    patches = []
+    for _ in range(n * 10):
+        pw, ph = int(rng.uniform(0.06, 0.25) * w), int(rng.uniform(0.06, 0.25) * h)
+        x, y = int(rng.uniform(0, w - pw)), int(rng.uniform(0, h - ph))
+        if busy[y:y + ph, x:x + pw].any():
+            continue
+        patch = img[y:y + ph, x:x + pw]
+        if patch.std() > 18:  # bỏ mảng sàn trơn, cần vật có cấu trúc
+            patches.append(patch.copy())
+        if len(patches) == n:
+            break
+    return patches
+
+
+def paste_clutter(img, objects, clutter, rng, n_max=3):
+    """Dán vật nền vào chỗ trống, KHÔNG thêm nhãn: dạy model đây không phải bao/pallet."""
+    if not clutter:
+        return img
+    h, w = img.shape[:2]
+    occupied = np.zeros((h, w), np.uint8)
+    for o in objects:
+        cv2.fillPoly(occupied, [np.array(o["corners"], np.int32)], 1)
+    occupied = cv2.dilate(occupied, np.ones((15, 15), np.uint8))
+    for _ in range(rng.integers(1, n_max + 1)):
+        patch = clutter[rng.integers(len(clutter))]
+        if rng.random() < 0.5:
+            patch = cv2.rotate(patch, rng.choice([cv2.ROTATE_90_CLOCKWISE, cv2.ROTATE_180,
+                                                  cv2.ROTATE_90_COUNTERCLOCKWISE]))
+        ph, pw = patch.shape[:2]
+        if ph >= h or pw >= w:
+            continue
+        for _try in range(20):
+            x, y = int(rng.uniform(0, w - pw)), int(rng.uniform(0, h - ph))
+            if not occupied[y:y + ph, x:x + pw].any():
+                alpha = np.ones((ph, pw), np.float32)
+                alpha = cv2.GaussianBlur(cv2.copyMakeBorder(alpha[4:-4, 4:-4], 4, 4, 4, 4, cv2.BORDER_CONSTANT),
+                                         (0, 0), 2)[..., None]
+                roi = img[y:y + ph, x:x + pw]
+                img[y:y + ph, x:x + pw] = (roi * (1 - alpha) + patch * alpha).astype(np.uint8)
+                occupied[y:y + ph, x:x + pw] = 1
+                break
+    return img
+
+
+def stripes(img, rng):
+    """Sọc: đèn LED nhấp nháy + màn trập cuộn (dải sáng tối song song), hoặc vạch lỗi cảm biến."""
+    h, w = img.shape[:2]
+    out = img.astype(np.float32)
+    if rng.random() < 0.6:
+        period, amp = rng.uniform(15, 140), rng.uniform(0.06, 0.25)
+        phase, a = rng.uniform(0, 2 * np.pi), rng.choice([0, np.pi / 2, rng.uniform(0, np.pi)])
+        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        t = xx * np.sin(a) + yy * np.cos(a)
+        out *= (1 + amp * np.sin(2 * np.pi * t / period + phase))[..., None]
+    else:
+        vertical = rng.random() < 0.5
+        for _ in range(rng.integers(2, 12)):
+            pos, thick = int(rng.uniform(0, w if vertical else h)), int(rng.integers(1, 5))
+            val = rng.uniform(-90, 90)
+            if vertical:
+                out[:, pos:pos + thick] += val
+            else:
+                out[pos:pos + thick] += val
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def defocus(img, rng):
+    """Mất nét (sai tiêu cự): nhân đĩa tròn, khác blur Gauss."""
+    r = int(rng.integers(3, 9))
+    kernel = np.zeros((2 * r + 1, 2 * r + 1), np.float32)
+    cv2.circle(kernel, (r, r), r, 1, -1)
+    return cv2.filter2D(img, -1, kernel / kernel.sum())
+
+
+def grayscale(img, rng):
+    g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return cv2.cvtColor(g, cv2.COLOR_GRAY2BGR)
+
+
+def channel_shuffle(img, rng):
+    return np.ascontiguousarray(img[..., rng.permutation(3)])
+
+
+def cutout(img, rng):
+    """Vài mảng nhỏ che ngẫu nhiên (vật lạ, giấy, băng keo): không đổi nhãn."""
+    h, w = img.shape[:2]
+    for _ in range(rng.integers(1, 5)):
+        cw, ch = int(rng.uniform(0.02, 0.07) * w), int(rng.uniform(0.02, 0.07) * h)
+        x, y = int(rng.uniform(0, w - cw)), int(rng.uniform(0, h - ch))
+        img[y:y + ch, x:x + cw] = rng.integers(0, 255, 3) if rng.random() < 0.5 \
+            else rng.integers(0, 255, (ch, cw, 3))
+    return img
+
+
 # (hàm, xác suất). recolor đứng đầu vì cần màu gốc để tách thân bao.
 LIGHTING = [(color_temperature, 0.5), (brightness_contrast, 0.6), (gamma, 0.35),
             (saturation, 0.35), (glare, 0.35), (shadow, 0.35), (vignette, 0.2)]
 SENSOR = [(noise, 0.3), (blur, 0.2), (motion_blur, 0.15), (jpeg, 0.3), (downscale, 0.15)]
+SENSOR_V3 = SENSOR + [(stripes, 0.25), (defocus, 0.15)]
+COLOR_V3 = [(grayscale, 0.08), (channel_shuffle, 0.08), (cutout, 0.25)]
 
 
-def augment(img, objects, rng, donors=None, p_recolor=0.7, scene=False):
+def augment(img, objects, rng, donors=None, p_recolor=0.7, scene=False, heavy=False, clutter=None):
     """objects: list dict có class_id và corners (pixel). Trả về (ảnh, objects).
-    scene=True bật thêm augment v2 (dán bao, che khuất, màng co); chỉ dán bao mới đổi nhãn."""
+    scene=True bật augment v2 (dán bao, che khuất, màng co).
+    heavy=True bật thêm v3: biến đổi hình học có cắt nhãn theo khung, mẫu âm, sọc/mất nét."""
+    img = img.copy()
     if scene:
         if rng.random() < 0.25:
             img = stretch_wrap(img, objects, rng)
         if donors and rng.random() < 0.5:
-            img, objects = paste_bags(img, objects, donors, rng)
+            img, objects = paste_bags(img, objects, donors, rng, n_max=4 if heavy else 3)
+    if heavy and clutter and rng.random() < 0.5:
+        img = paste_clutter(img, objects, clutter, rng)
     bag_polys = [np.array(o["corners"]) for o in objects if o["class_id"] == 1]
     if rng.random() < p_recolor:
         img = recolor_bags(img, bag_polys, rng)
     if scene and rng.random() < 0.25:
         img = arm_occluder(img, objects, rng)
+    if heavy:
+        # Tối đa một phép hình học offline; Ultralytics còn xoay/lật/scale online.
+        geo = [fn for fn, p in GEOMETRIC if rng.random() < p]
+        if geo:
+            img, objects = geo[rng.integers(len(geo))](img, objects, rng)
+        for fn, p in COLOR_V3:
+            if rng.random() < p:
+                img = fn(img, rng)
     # Tối đa 3 phép ánh sáng: chồng nhiều phép làm ảnh cháy trắng, không thực tế.
     lighting = [fn for fn, p in LIGHTING if rng.random() < p]
     if len(lighting) > 3:
@@ -308,7 +523,7 @@ def augment(img, objects, rng, donors=None, p_recolor=0.7, scene=False):
     for fn in lighting:
         img = fn(img, rng)
     # Nhiễu cảm biến tối đa 2 loại để ảnh không nát quá.
-    sensor = [fn for fn, p in SENSOR if rng.random() < p]
+    sensor = [fn for fn, p in (SENSOR_V3 if heavy else SENSOR) if rng.random() < p]
     for fn in rng.permutation(sensor)[:2]:
         img = fn(img, rng)
     return img, objects
