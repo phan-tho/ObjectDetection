@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 KAGGLE = str(Path(sys.executable).with_name("kaggle.exe" if sys.platform == "win32" else "kaggle"))
 FILES = ["code/train/augment.py", "code/train/build_dataset.py", "code/train/train.py",
-         "code/train/predict.py", "code/train/analyze_errors.py", "code/obb_labeler/app.py",
+         "code/train/predict.py", "code/train/analyze_errors.py", "code/train/pipeline.py",
+         "code/train/build_crops.py", "code/obb_labeler/app.py",
          "code/obb_labeler/selection.json",
          "code/obb_labeler/results/annotations.json",
          "code/image_sorter/results/labels.csv"]
@@ -70,16 +71,25 @@ def push_code(user, tmp):
     raise SystemExit(f"Dataset chưa sẵn sàng: {status}")
 
 
-def push_kernel(user, tmp):
+def kernel_slug(stage):
+    return SLUG_KERNEL if stage == "compare" else f"{SLUG_KERNEL}-{stage}"
+
+
+def push_kernel(user, tmp, stage):
     folder = tmp / "kernel"
     folder.mkdir()
-    shutil.copy(HERE / "kernel.py", folder / "kernel.py")
+    code = (HERE / "kernel.py").read_text(encoding="utf-8")
+    (folder / "kernel.py").write_text(code.replace('STAGE = "compare"', f'STAGE = "{stage}"', 1), encoding="utf-8")
+    slug = kernel_slug(stage)
+    # methods/fix dùng weights của kernel compare; v5 dùng bảng điểm của kernel fix (mount output).
+    source = {"methods": "compare", "fix": "compare", "v5": "fix"}.get(stage)
+    sources = [f"{user}/{kernel_slug(source)}"] if source else []
     (folder / "kernel-metadata.json").write_text(json.dumps({
-        "id": f"{user}/{SLUG_KERNEL}", "title": SLUG_KERNEL, "code_file": "kernel.py",
+        "id": f"{user}/{slug}", "title": slug, "code_file": "kernel.py",
         "language": "python", "kernel_type": "script", "is_private": True,
         "enable_gpu": True, "enable_internet": True,
         "dataset_sources": ["phanbth/bao-tai-1", "phanbth/bao-tai-2", f"{user}/{SLUG_DATA}"],
-        "competition_sources": [], "kernel_sources": []}, indent=1))
+        "competition_sources": [], "kernel_sources": sources}, indent=1))
     # CLI trả mã 0 cả khi lỗi (vd hết quota GPU), nên phải đọc output.
     out = kaggle("kernels", "push", "-p", str(folder), "--accelerator", "NvidiaTeslaT4", capture=True)
     print(out.stdout, out.stderr)
@@ -90,6 +100,9 @@ def push_kernel(user, tmp):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-a", "--account", help="username trong .kaggle/tokens.json")
+    ap.add_argument("--stage", default="compare", choices=["compare", "methods", "fix", "v5"],
+                    help="compare: so cấu hình augment; methods: two-stage/tiling/freeze; "
+                         "fix: augment v4 + so công bằng; v5: ánh sáng theo lớp xếp (cần fix xong)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--pull", action="store_true")
     ap.add_argument("--kernel-only", action="store_true", help="không upload lại code")
@@ -98,11 +111,11 @@ def main():
         use_account(args.account)
     user = username()
     print(f"Tài khoản Kaggle: {user}")
-    ref = f"{user}/{SLUG_KERNEL}"
+    ref = f"{user}/{kernel_slug(args.stage)}"
     if args.status:
         kaggle("kernels", "status", ref)
     elif args.pull:
-        out = ROOT / "runs" / "kaggle"
+        out = ROOT / "runs" / ("kaggle" if args.stage == "compare" else f"kaggle_{args.stage}")
         out.mkdir(parents=True, exist_ok=True)
         kaggle("kernels", "output", ref, "-p", str(out), "-o")
         print(f"-> {out}")
@@ -110,7 +123,7 @@ def main():
         with tempfile.TemporaryDirectory() as tmp:
             if not args.kernel_only:
                 push_code(user, Path(tmp))
-            push_kernel(user, Path(tmp))
+            push_kernel(user, Path(tmp), args.stage)
         print(f"https://www.kaggle.com/code/{ref}")
 
 

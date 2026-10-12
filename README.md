@@ -34,71 +34,111 @@ Số dưới đây tính theo lượt chụp; một lượt có thể mang nhi�
 
 ## Kết quả thử nghiệm
 
-Model: **YOLO26n-OBB** (nano, pretrained DOTA), 2 lớp `pallet_region` và `bag`, ảnh 640, 60 epoch,
-train trên GPU T4 của Kaggle. Code và cách chạy lại: `code/train/README.md`. Chỉ số chính là
-**mAP50-95** trên tập val; mAP50 gần như bão hòa (0.84–0.99), còn mAP50-95 phản ánh cả độ khít
-của box, vốn quan trọng khi robot gắp.
+Model: **YOLO26n-OBB** (Ultralytics 8.4, nano, ~2.4M tham số, pretrained DOTA), 2 lớp
+`pallet_region` và `bag`. Train trên GPU T4 của Kaggle: AdamW (Ultralytics tự chọn lr ≈ 0.0017),
+batch 8, 60 epoch, seed 0; augment online xoay 0–180°, lật, scale ±50%, mosaic. Code và cách chạy
+lại: `code/train/README.md`.
 
-Val chia **theo nhóm cảnh** (`sequence_group`), không chia ngẫu nhiên: các frame cùng chuỗi gần như
-giống nhau, chia ngẫu nhiên sẽ làm điểm ảo cao. Mọi ảnh val là cảnh model chưa thấy khi train.
+### Cách đánh giá
 
-### Vòng 1: so sánh cấu hình (2 fold, 7 ảnh val)
+- **Chia theo nhóm cảnh, 4 fold phủ cả 25 ảnh** (`red` 4 ảnh, `sep3` 3, `green` 8, `sep1` 10): mỗi fold
+  giữ lại một/vài `sequence_group` làm val, train trên phần còn lại. Mỗi ảnh làm val đúng một lần,
+  không ảnh nào vừa train vừa val. Không chia ngẫu nhiên, vì các frame cùng chuỗi gần như trùng nhau.
+- Chỉ số chính **mAP50-95** trung bình 2 lớp (IoU xoay kiểu probiou của Ultralytics). mAP50 gần như
+  bão hòa; mAP50-95 phản ánh cả độ khít của box, cần cho robot gắp.
+- **Chấm bằng model ở epoch cuối (`last.pt`)**, không dùng `best.pt`. `best.pt` là epoch có mAP val
+  cao nhất, tức đã dùng chính tập val để chọn, nên điểm bị thổi lên. Ví dụ fold `red` không augment:
+  0.880 ở epoch 8, còn epoch cuối chỉ 0.722.
+- Vẫn còn hạn chế: không có tập test độc lập (cấu hình được chọn trên chính 4 fold này), fold nhỏ,
+  và trước vòng 4 mỗi cấu hình chỉ chạy 1 seed. Chạy lại cùng cấu hình từng lệch ~2 điểm, nên
+  chênh lệch dưới ~2 điểm coi như hòa.
+- Số của vòng 1 và vòng 3 bên dưới vẫn chấm bằng `best.pt` (đã ghi chú). Vòng 2 có cả hai.
+
+### Vòng 1: so sánh cấu hình (2 fold, 7 ảnh val, `best.pt`)
 
 | Cấu hình | Fold bao đỏ (4 ảnh) | Fold cảnh khó (3 ảnh) | Trung bình |
 |---|---:|---:|---:|
 | Không augment (nhân bản ảnh gốc) | 0.880 | 0.696 | 0.788 |
 | Augment v1: màu bao, ánh sáng, nhiễu | 0.888 | 0.726 | 0.807 |
 | Augment v2: v1 + dán bao rời, che khuất, màng co | 0.861 | 0.711 | 0.786 |
-| Augment v2, ảnh 960 | 0.893 | 0.727 | **0.810** |
+| Augment v2, ảnh 960 | 0.893 | 0.727 | 0.810 |
 | YOLO11n, augment v2 | 0.781 | 0.759 | 0.770 |
 
-- Augment giúp, nhưng mức lợi chỉ khoảng 2–4 điểm. Cùng một cấu hình chạy hai lần (máy local và
-  Kaggle) lệch nhau tới ~2 điểm, nên **chưa phân định được v1, v2 và 960**: chênh lệch nằm trong
-  nhiễu vì val chỉ có 7 ảnh.
-- YOLO11n không tốt hơn YOLO26n (kém hẳn ở fold bao đỏ) → giữ **YOLO26n nano**.
-- Lớp bao yếu hơn lớp pallet (bao 0.66–0.87, pallet 0.74–0.95).
+Chỉ dùng được một kết luận: **YOLO11n không tốt hơn YOLO26n** → giữ YOLO26n nano. Val 7 ảnh quá ít để
+so các augment.
 
-### Phân tích lỗi (augment v1, 7 ảnh val, `code/train/analyze_errors.py`)
+### Vòng 2: augment v3, 4 fold
 
-So khớp box dự đoán với nhãn bằng IoU xoay. Bắt được khi IoU ≥ 0.5; box lệch khi IoU < 0.75.
+Augment v3 (`--heavy`) thêm biến đổi hình học có cắt nhãn theo khung ảnh (cắt/zoom, thu nhỏ, xoay cả
+ảnh, nghiêng phối cảnh), mẫu âm (dán vật nền cắt từ vùng không nhãn), sọc nhấp nháy đèn, vạch lỗi
+cảm biến, mất nét, ảnh xám, che ngẫu nhiên. v3 có 30 bản augment mỗi ảnh, v1 có 15.
 
-| Nhóm bao | Lỗi (bỏ sót + box lệch) |
+| mAP50-95, trung bình 10 epoch cuối | red | sep3 | green | sep1 | **TB 4 fold** | (best.pt, lạc quan) |
+|---|---:|---:|---:|---:|---:|---:|
+| Không augment | 0.713 | 0.594 | 0.729 | 0.858 | **0.724** | 0.807 |
+| Augment v1 | 0.855 | 0.651 | 0.786 | 0.898 | **0.798** | 0.830 |
+| Augment v3 | 0.798 | 0.680 | 0.758 | 0.938 | **0.794** | 0.843 |
+| Augment v3, ảnh 960 | 0.852 | 0.746 | 0.804 | 0.919 | **0.830** | 0.854 |
+
+- **Augment là thay đổi có tác dụng lớn nhất: +7.4 điểm.** Không augment thì model học vẹt rất nhanh:
+  đạt đỉnh ở epoch ~8 rồi tụt dần.
+- **v3 không hơn v1** ở ảnh 640, dù v3 được train gấp đôi số bước (30 so với 15 bản/ảnh).
+- **Ảnh 960 giúp thật: +3.6 điểm** so với 640, rõ nhất ở `sep3` (nhiều bao nhỏ).
+
+### Vòng 3: phương pháp suy luận (4 fold, `best.pt`)
+
+Chấm bằng `code/train/pipeline.py` trên ảnh gốc 1920×1080. Bộ chấm tính mAP như Ultralytics val, đã
+kiểm tra khớp tới 4 chữ số khi cùng tiền xử lý.
+
+| Phương pháp | v1 640 | v3 640 | v3 960 |
+|---|---:|---:|---:|
+| plain: một lần trên cả ảnh | 0.819 | 0.812 | **0.838** |
+| tiled: thêm bao từ các ô 960×960 của ảnh gốc | 0.776 | 0.797 | 0.829 |
+| two_stage: tìm pallet → crop ảnh gốc → model crop tìm bao | 0.827 | 0.811 | – |
+| plain + chỉ giữ bao trong pallet | 0.816 | 0.805 | 0.834 |
+| v3 + đóng băng backbone (`--freeze 11`) | – | 0.682 | – |
+
+- **Đóng băng backbone tệ hẳn** (−13 điểm): backbone pretrained trên ảnh vệ tinh DOTA không hợp với
+  ảnh kho, cần được fine-tune.
+- **Tiling tệ hơn**, vì model chưa học bao ở kích thước lớn đó. **Hai giai đoạn** hơn plain dưới 1 điểm
+  (nằm trong nhiễu) mà phức tạp hơn nhiều. **Ảnh 960 vẫn là cách đơn giản và tốt nhất.**
+- Lọc bao trong pallet không tăng mAP, vì bao rời có nhãn ngoài pallet cũng bị bỏ. Nó chỉ có ích ở
+  đầu ra cho robot, để bỏ báo nhầm ngoài pallet.
+- NMS chặt hơn khi suy luận (IoU 0.5 hoặc 0.4 thay vì 0.7) cũng không giúp (kiểm tra với `last.pt`).
+
+### Vòng 4: sửa các case kém (đang chạy)
+
+Phân tích lỗi cấu hình tốt nhất (v3 960, `last.pt`, cả 25 ảnh, `runs/errors_v3_960/`). Lỗi = bỏ sót
+hoặc box lệch (IoU < 0.75):
+
+| Nhóm bao (254 bao) | Lỗi |
 |---|---:|
-| **Bị cắt bởi biên ảnh** | **9/9 (100%)** |
-| Nằm sát mép ảnh | 10/18 (56%) |
-| **Nhỏ, dưới 1% diện tích ảnh** | **9/10 (90%)** |
-| Nhỏ, 1–2% diện tích | 7/17 (41%) |
-| Bị che khuất | 5/18 (28%) |
-| Không bị che | 21/75 (28%) |
-| Còn lại (to, ở giữa) | 15–20% |
+| Tổng | 56 (39 lệch, 17 bỏ sót) |
+| **Bị bao khác đè lên** (56 bao) | **45%** |
+| Không bị che (198 bao) | 16% |
+| Nhỏ, dưới 1% ảnh (12) / 1–2% ảnh (61) | 83% / 43% |
+| To, ≥ 2% ảnh (181) | 11% |
+| Trên pallet mục tiêu / pallet khác / bao rời | 22% / 22% / 25% |
 
-- Tổng: 93 bao → 67 đúng, 12 lệch, 14 bỏ sót. Pallet: 18 → 14 đúng, 4 lệch, không bỏ sót.
-- **24 box báo nhầm**: 13 trong vùng pallet (tách sai ranh giới bao xếp sát nhau, nhất là bao bọc
-  màng co), 11 ngoài pallet (tấm cửa/trần độ tin cậy 0.92, kệ, áo phản quang của công nhân).
-- Che khuất **không** làm tăng lỗi. Lỗi tập trung ở **mép ảnh**, **bao nhỏ** và **vật nền giống bao**.
-- Ảnh khó nhất: `142952` (nhiều pallet, bao nhỏ bọc màng co ở mép: 7 bỏ sót, 10 báo nhầm).
+Báo nhầm ở conf ≥ 0.25: 28 box bao, 19 box pallet. Ảnh kém nhất và nguyên nhân thấy trên ảnh:
 
-### Vòng 2: augment v3 nhắm vào các lỗi trên (đang chạy)
+| Ảnh | Nguyên nhân | Augment v4 (`--v4`) sửa |
+|---|---|---|
+| `session_080/084/087/077` (bao xanh) | Bao nằm chéo đè lên bao khác. Nhãn chỉ khoanh **phần thân còn thấy** nhưng train ít mẫu loại này | `occlude_bags`: dán bao thật đè một phần lên bao có sẵn, tính lại nhãn của bao bên dưới theo phần còn thấy (đúng quy ước gán nhãn), nới vùng pallet |
+| `session_080/084/087`, `142952` | Người, áo phản quang, vạch sơn, tấm cửa bị nhận là bao/pallet | Mẫu âm dày hơn: xác suất 0.5 → 0.7, tối đa 5 vật/ảnh, mảng to hơn |
+| `session_062` | Pallet sắt rỗng bị sót, chỉ khoanh được từng mảnh. Cả bộ chỉ có 1 pallet sắt rỗng | `paste_empty_pallet`: dán pallet rỗng (cắt từ ảnh train) vào chỗ trống |
+| `142952`, `142402` | Nhiều pallet, bao bọc màng co, lát bao nhỏ sát mép | Giữ ảnh 960. Phần còn lại là giới hạn của dữ liệu |
 
-| Lỗi | Augment v3 thêm vào (`code/train/augment.py`) |
-|---|---|
-| Bao cắt biên | Cắt/zoom ngẫu nhiên để pallet bị cắt ở mép; xoay cả ảnh góc bất kỳ; nghiêng phối cảnh. Nhãn được cắt theo khung ảnh (giữ phần còn thấy, bao còn quá ít thì tô xám) |
-| Bao nhỏ | Thu nhỏ cả cảnh (bao 0.45–0.8×) trên nền giả; thử thêm ảnh 960 |
-| Báo nhầm ngoài pallet | Dán vật nền (cửa, kệ, người, carton) cắt từ vùng không có nhãn, làm mẫu âm |
-| Ảnh xấu | Sọc nhấp nháy đèn LED, vạch lỗi cảm biến, mất nét, ảnh xám, đảo kênh màu, che ngẫu nhiên |
-
-Số bản augment mỗi ảnh tăng từ 15 lên 30. Đánh giá đổi sang **4 fold theo nhóm cảnh phủ cả 25
-ảnh** (mỗi ảnh làm val đúng một lần) để giảm nhiễu so sánh.
+So sánh công bằng ở vòng 4: v1, v3, v4 **cùng ảnh 960, cùng 30 bản augment/ảnh, mỗi cấu hình 2 seed**,
+chấm `last.pt` bằng `pipeline.py`. Model cuối: v4 960 trên cả 25 ảnh.
 
 ### Model và dự đoán hiện có
 
-- Model cuối vòng 1 (cả 25 ảnh, augment v2): weights ở `runs/kaggle/runs/all_y26n_v2/weights/last.pt`,
-  kèm bản 960. Thư mục `runs/` không đưa lên git; tải lại bằng
-  `code/train/kaggle/push.py -a <tài khoản> --pull`.
-- Dự đoán 80 lượt chưa nhãn: `runs/kaggle/runs/predict_all_y26n_v2/` (`predictions.json` cùng
-  schema box với `annotations.json`, `vis/*.jpg` để xem). Pallet đầy/vơi/ít/rỗng đều khoanh đúng
-  về cơ bản. Lỗi thấy được: áo phản quang và một vật nhỏ trên sàn bị nhận thành bao; 13/986 box có
-  độ tin cậy dưới 0.5.
+- Model cuối vòng 2 (cả 25 ảnh, augment v3, 100 epoch, không có val): `runs/kaggle/runs/all_v3/weights/last.pt`
+  và bản 960 `all_v3_960`. Dự đoán 80 lượt chưa nhãn: `runs/kaggle/runs/predict_all_v3*/`
+  (`predictions.json` cùng schema box với `annotations.json`, `vis/*.jpg` để xem).
+- Bản vòng 1 (augment v2) ở `runs/kaggle_v1/`. Thư mục `runs/` không đưa lên git; tải lại bằng
+  `code/train/kaggle/push.py -a <tài khoản> [--stage methods] --pull`.
 
 ### Hướng tiếp theo
 
