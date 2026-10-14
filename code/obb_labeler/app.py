@@ -7,6 +7,7 @@ import errno
 import io
 import json
 import math
+import os
 import threading
 import webbrowser
 from datetime import datetime
@@ -136,9 +137,13 @@ def main():
                                   for point in corners(box) for axis, value in enumerate(point)]
                     lines.append(str(box["class_id"]) + " " + " ".join(f"{min(1, max(0, value)):.8f}" for value in normalized))
                 label_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                # Link tương đối để repo chuyển máy vẫn đúng; link cũ trỏ sai thì tạo lại.
+                target = os.path.relpath(ROOT / image["image_path"], image_path.parent)
+                if image_path.is_symlink() and os.readlink(image_path) != target:
+                    image_path.unlink()
                 if not image_path.exists() and not image_path.is_symlink():
-                    image_path.symlink_to(ROOT / image["image_path"])
-                reviewed_paths.append(str(image_path))
+                    image_path.symlink_to(target)
+                reviewed_paths.append(Path(os.path.relpath(image_path, ROOT)).as_posix())
             else:
                 # Chỉ xóa bản xuất dẫn xuất khi người dùng sửa một ảnh đã xác nhận.
                 label_path.unlink(missing_ok=True)

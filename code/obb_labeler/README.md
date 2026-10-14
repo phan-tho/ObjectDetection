@@ -79,7 +79,7 @@ Kết quả trong `code/obb_labeler/results/`:
   trạng thái đã kiểm tra và ghi chú.
 - `yolo/labels/<id>.txt`: chỉ ảnh đã kiểm tra; mỗi dòng
   `class_id x1 y1 x2 y2 x3 y3 x4 y4`, tọa độ chuẩn hóa theo ảnh gốc.
-- `yolo/images/<id>.png`: symlink tới RGB gốc tương ứng, không nhân bản ảnh.
+- `yolo/images/<id>.png`: symlink tương đối tới RGB gốc tương ứng, không nhân bản ảnh.
 - `yolo/classes.yaml`: `0: pallet_region`, `1: bag`.
 - `yolo/reviewed.txt`: danh sách ảnh đã kiểm tra để chọn dữ liệu train sau này.
 
