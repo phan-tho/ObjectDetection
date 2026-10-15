@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 KAGGLE = str(Path(sys.executable).with_name("kaggle.exe" if sys.platform == "win32" else "kaggle"))
 FILES = ["code/train/augment.py", "code/train/build_dataset.py", "code/train/train.py",
          "code/train/predict.py", "code/train/analyze_errors.py", "code/train/pipeline.py",
-         "code/train/build_crops.py", "code/obb_labeler/app.py",
+         "code/train/build_crops.py", "code/train/ensemble.py", "code/obb_labeler/app.py",
          "code/obb_labeler/selection.json",
          "code/obb_labeler/results/annotations.json",
          "code/image_sorter/results/labels.csv"]
@@ -100,9 +100,13 @@ def push_kernel(user, tmp, stage):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-a", "--account", help="username trong .kaggle/tokens.json")
-    ap.add_argument("--stage", default="compare", choices=["compare", "methods", "fix", "v5"],
+    ap.add_argument("--stage", default="compare",
+                    choices=["compare", "methods", "fix", "v5", "s960", "n1280", "s960e120",
+                             "m960-s0", "m960-s1", "l960-s0", "l960-s1"],
                     help="compare: so cấu hình augment; methods: two-stage/tiling/freeze; "
-                         "fix: augment v4 + so công bằng; v5: ánh sáng theo lớp xếp (cần fix xong)")
+                         "fix: augment v4 + so công bằng; v5: ánh sáng theo lớp xếp (cần fix xong); "
+                         "s960/n1280: model s ảnh 960 / nano ảnh 1280, 2 seed + ensemble; "
+                         "s960e120, m960-s*, l960-s*: 120 epoch, model s/m/l (SCALE trong kernel.py)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--pull", action="store_true")
     ap.add_argument("--kernel-only", action="store_true", help="không upload lại code")

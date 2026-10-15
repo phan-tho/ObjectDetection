@@ -434,6 +434,1367 @@
       "sequence_group": "september_pallet_4",
       "old_sequence_hint": "st06_20260911_143857",
       "purpose": "seed_train"
+    },
+    {
+      "id": "bao-tai/session_032",
+      "image_path": "bao-tai/session_032/session_032_frame_000001_color.png",
+      "depth_path": "bao-tai/session_032/session_032_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:06.446072+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_033",
+      "image_path": "bao-tai/session_033/session_033_frame_000001_color.png",
+      "depth_path": "bao-tai/session_033/session_033_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:07.541101+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_034",
+      "image_path": "bao-tai/session_034/session_034_frame_000001_color.png",
+      "depth_path": "bao-tai/session_034/session_034_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:08.825936+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_035",
+      "image_path": "bao-tai/session_035/session_035_frame_000001_color.png",
+      "depth_path": "bao-tai/session_035/session_035_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:15.801892+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_036",
+      "image_path": "bao-tai/session_036/session_036_frame_000001_color.png",
+      "depth_path": "bao-tai/session_036/session_036_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:16.916923+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_037",
+      "image_path": "bao-tai/session_037/session_037_frame_000001_color.png",
+      "depth_path": "bao-tai/session_037/session_037_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:18.007797+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_038",
+      "image_path": "bao-tai/session_038/session_038_frame_000001_color.png",
+      "depth_path": "bao-tai/session_038/session_038_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:19.007487+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_039",
+      "image_path": "bao-tai/session_039/session_039_frame_000001_color.png",
+      "depth_path": "bao-tai/session_039/session_039_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:20.238935+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_040",
+      "image_path": "bao-tai/session_040/session_040_frame_000001_color.png",
+      "depth_path": "bao-tai/session_040/session_040_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:37.953902+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_041",
+      "image_path": "bao-tai/session_041/session_041_frame_000001_color.png",
+      "depth_path": "bao-tai/session_041/session_041_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:39.708558+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_042",
+      "image_path": "bao-tai/session_042/session_042_frame_000001_color.png",
+      "depth_path": "bao-tai/session_042/session_042_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:40.990891+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_044",
+      "image_path": "bao-tai/session_044/session_044_frame_000001_color.png",
+      "depth_path": "bao-tai/session_044/session_044_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "pallet_offset",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:54.860972+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_045",
+      "image_path": "bao-tai/session_045/session_045_frame_000001_color.png",
+      "depth_path": "bao-tai/session_045/session_045_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "pallet_offset",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:56.072341+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_046",
+      "image_path": "bao-tai/session_046/session_046_frame_000001_color.png",
+      "depth_path": "bao-tai/session_046/session_046_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "pallet_offset",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:57.166220+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_047",
+      "image_path": "bao-tai/session_047/session_047_frame_000001_color.png",
+      "depth_path": "bao-tai/session_047/session_047_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "pallet_offset",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T14:59:58.467778+07:00",
+      "sequence_group": "august_red",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_063",
+      "image_path": "bao-tai/session_063/session_063_frame_000001_color.png",
+      "depth_path": "bao-tai/session_063/session_063_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "empty",
+      "tags": [
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:02:47.228807+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_064",
+      "image_path": "bao-tai/session_064/session_064_frame_000001_color.png",
+      "depth_path": "bao-tai/session_064/session_064_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "empty",
+      "tags": [
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:02:48.437030+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_065",
+      "image_path": "bao-tai/session_065/session_065_frame_000001_color.png",
+      "depth_path": "bao-tai/session_065/session_065_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "empty",
+      "tags": [
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:02:49.844106+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_067",
+      "image_path": "bao-tai/session_067/session_067_frame_000001_color.png",
+      "depth_path": "bao-tai/session_067/session_067_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:03:57.008268+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_069",
+      "image_path": "bao-tai/session_069/session_069_frame_000001_color.png",
+      "depth_path": "bao-tai/session_069/session_069_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "lighting",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:03:59.361459+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_072",
+      "image_path": "bao-tai/session_072/session_072_frame_000001_color.png",
+      "depth_path": "bao-tai/session_072/session_072_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:39.006430+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_073",
+      "image_path": "bao-tai/session_073/session_073_frame_000001_color.png",
+      "depth_path": "bao-tai/session_073/session_073_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:40.428940+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_074",
+      "image_path": "bao-tai/session_074/session_074_frame_000001_color.png",
+      "depth_path": "bao-tai/session_074/session_074_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:51.578295+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_075",
+      "image_path": "bao-tai/session_075/session_075_frame_000001_color.png",
+      "depth_path": "bao-tai/session_075/session_075_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:52.780942+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_076",
+      "image_path": "bao-tai/session_076/session_076_frame_000001_color.png",
+      "depth_path": "bao-tai/session_076/session_076_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:54.072233+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_078",
+      "image_path": "bao-tai/session_078/session_078_frame_000001_color.png",
+      "depth_path": "bao-tai/session_078/session_078_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "rotation",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:04:59.476221+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_079",
+      "image_path": "bao-tai/session_079/session_079_frame_000001_color.png",
+      "depth_path": "bao-tai/session_079/session_079_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "rotation",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:00.707973+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_081",
+      "image_path": "bao-tai/session_081/session_081_frame_000001_color.png",
+      "depth_path": "bao-tai/session_081/session_081_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overlap",
+        "deformed",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:07.544059+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_082",
+      "image_path": "bao-tai/session_082/session_082_frame_000001_color.png",
+      "depth_path": "bao-tai/session_082/session_082_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overlap",
+        "deformed",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:08.980411+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_083",
+      "image_path": "bao-tai/session_083/session_083_frame_000001_color.png",
+      "depth_path": "bao-tai/session_083/session_083_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overlap",
+        "deformed",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:10.161774+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_085",
+      "image_path": "bao-tai/session_085/session_085_frame_000001_color.png",
+      "depth_path": "bao-tai/session_085/session_085_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "partial",
+      "tags": [
+        "overlap",
+        "rotation",
+        "deformed",
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:54.795309+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_086",
+      "image_path": "bao-tai/session_086/session_086_frame_000001_color.png",
+      "depth_path": "bao-tai/session_086/session_086_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "partial",
+      "tags": [
+        "overlap",
+        "rotation",
+        "deformed",
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:05:56.075429+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_088",
+      "image_path": "bao-tai/session_088/session_088_frame_000001_color.png",
+      "depth_path": "bao-tai/session_088/session_088_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "partial",
+      "tags": [
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:06:08.832349+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_089",
+      "image_path": "bao-tai/session_089/session_089_frame_000001_color.png",
+      "depth_path": "bao-tai/session_089/session_089_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "partial",
+      "tags": [
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:06:10.042055+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "bao-tai/session_090",
+      "image_path": "bao-tai/session_090/session_090_frame_000001_color.png",
+      "depth_path": "bao-tai/session_090/session_090_frame_000001_depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "partial",
+      "tags": [
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-08-13T15:06:11.131499+07:00",
+      "sequence_group": "august_green_and_empty",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140642_803470_7631f123",
+      "image_path": "2026-09-11/140642_803470_7631f123/color.png",
+      "depth_path": "2026-09-11/140642_803470_7631f123/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:06:42.614071+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140719_933537_704d24be",
+      "image_path": "2026-09-11/140719_933537_704d24be/color.png",
+      "depth_path": "2026-09-11/140719_933537_704d24be/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:07:19.743560+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140750_716595_4ec33959",
+      "image_path": "2026-09-11/140750_716595_4ec33959/color.png",
+      "depth_path": "2026-09-11/140750_716595_4ec33959/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:07:50.525091+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140804_626421_b2657bca",
+      "image_path": "2026-09-11/140804_626421_b2657bca/color.png",
+      "depth_path": "2026-09-11/140804_626421_b2657bca/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:04.434781+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140806_374539_575f3499",
+      "image_path": "2026-09-11/140806_374539_575f3499/color.png",
+      "depth_path": "2026-09-11/140806_374539_575f3499/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:06.188393+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140815_309090_8c0184e1",
+      "image_path": "2026-09-11/140815_309090_8c0184e1/color.png",
+      "depth_path": "2026-09-11/140815_309090_8c0184e1/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:15.118945+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140826_335014_ac85bcbf",
+      "image_path": "2026-09-11/140826_335014_ac85bcbf/color.png",
+      "depth_path": "2026-09-11/140826_335014_ac85bcbf/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:26.147471+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140844_617779_55a97c51",
+      "image_path": "2026-09-11/140844_617779_55a97c51/color.png",
+      "depth_path": "2026-09-11/140844_617779_55a97c51/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:44.432004+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140855_886352_92f7628f",
+      "image_path": "2026-09-11/140855_886352_92f7628f/color.png",
+      "depth_path": "2026-09-11/140855_886352_92f7628f/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:08:55.695100+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140929_633461_4cbe8ba0",
+      "image_path": "2026-09-11/140929_633461_4cbe8ba0/color.png",
+      "depth_path": "2026-09-11/140929_633461_4cbe8ba0/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:09:29.443167+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140948_926704_073eeeb1",
+      "image_path": "2026-09-11/140948_926704_073eeeb1/color.png",
+      "depth_path": "2026-09-11/140948_926704_073eeeb1/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:09:48.734302+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/140956_652349_991dc15c",
+      "image_path": "2026-09-11/140956_652349_991dc15c/color.png",
+      "depth_path": "2026-09-11/140956_652349_991dc15c/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:09:56.459207+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141006_675771_8a311035",
+      "image_path": "2026-09-11/141006_675771_8a311035/color.png",
+      "depth_path": "2026-09-11/141006_675771_8a311035/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:10:06.483225+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141020_332032_17025308",
+      "image_path": "2026-09-11/141020_332032_17025308/color.png",
+      "depth_path": "2026-09-11/141020_332032_17025308/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:10:20.144559+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141053_447491_ee16da2b",
+      "image_path": "2026-09-11/141053_447491_ee16da2b/color.png",
+      "depth_path": "2026-09-11/141053_447491_ee16da2b/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:10:53.254408+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141121_288253_f0ad9c0a",
+      "image_path": "2026-09-11/141121_288253_f0ad9c0a/color.png",
+      "depth_path": "2026-09-11/141121_288253_f0ad9c0a/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:11:21.096520+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141133_862342_7ef663ec",
+      "image_path": "2026-09-11/141133_862342_7ef663ec/color.png",
+      "depth_path": "2026-09-11/141133_862342_7ef663ec/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:11:33.667223+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141148_554512_979dec6a",
+      "image_path": "2026-09-11/141148_554512_979dec6a/color.png",
+      "depth_path": "2026-09-11/141148_554512_979dec6a/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:11:48.360728+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141204_067268_34d00376",
+      "image_path": "2026-09-11/141204_067268_34d00376/color.png",
+      "depth_path": "2026-09-11/141204_067268_34d00376/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:12:03.876541+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141214_565300_b5a4bcb3",
+      "image_path": "2026-09-11/141214_565300_b5a4bcb3/color.png",
+      "depth_path": "2026-09-11/141214_565300_b5a4bcb3/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:12:14.372891+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141224_010523_9632dc00",
+      "image_path": "2026-09-11/141224_010523_9632dc00/color.png",
+      "depth_path": "2026-09-11/141224_010523_9632dc00/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:12:23.821189+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141238_665790_f8cb564b",
+      "image_path": "2026-09-11/141238_665790_f8cb564b/color.png",
+      "depth_path": "2026-09-11/141238_665790_f8cb564b/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:12:38.476647+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141254_857538_84c13e9e",
+      "image_path": "2026-09-11/141254_857538_84c13e9e/color.png",
+      "depth_path": "2026-09-11/141254_857538_84c13e9e/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:12:54.666013+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141304_624526_91ebb998",
+      "image_path": "2026-09-11/141304_624526_91ebb998/color.png",
+      "depth_path": "2026-09-11/141304_624526_91ebb998/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:13:04.429911+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141315_819860_5ac6d602",
+      "image_path": "2026-09-11/141315_819860_5ac6d602/color.png",
+      "depth_path": "2026-09-11/141315_819860_5ac6d602/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:13:15.632888+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141328_349276_09cd3f3c",
+      "image_path": "2026-09-11/141328_349276_09cd3f3c/color.png",
+      "depth_path": "2026-09-11/141328_349276_09cd3f3c/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:13:28.154873+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141341_948804_6e36a7fa",
+      "image_path": "2026-09-11/141341_948804_6e36a7fa/color.png",
+      "depth_path": "2026-09-11/141341_948804_6e36a7fa/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:13:41.756073+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141400_885885_f56c8b72",
+      "image_path": "2026-09-11/141400_885885_f56c8b72/color.png",
+      "depth_path": "2026-09-11/141400_885885_f56c8b72/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:14:00.690702+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141409_520204_1fe63523",
+      "image_path": "2026-09-11/141409_520204_1fe63523/color.png",
+      "depth_path": "2026-09-11/141409_520204_1fe63523/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:14:09.327242+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141418_035944_97ef65e0",
+      "image_path": "2026-09-11/141418_035944_97ef65e0/color.png",
+      "depth_path": "2026-09-11/141418_035944_97ef65e0/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:14:17.843638+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141526_857617_f1bb1c3b",
+      "image_path": "2026-09-11/141526_857617_f1bb1c3b/color.png",
+      "depth_path": "2026-09-11/141526_857617_f1bb1c3b/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:15:26.663909+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141608_734821_83c9c855",
+      "image_path": "2026-09-11/141608_734821_83c9c855/color.png",
+      "depth_path": "2026-09-11/141608_734821_83c9c855/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:16:08.541321+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141610_779687_9ae55ff9",
+      "image_path": "2026-09-11/141610_779687_9ae55ff9/color.png",
+      "depth_path": "2026-09-11/141610_779687_9ae55ff9/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:16:10.585835+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141620_960135_5fb8c52a",
+      "image_path": "2026-09-11/141620_960135_5fb8c52a/color.png",
+      "depth_path": "2026-09-11/141620_960135_5fb8c52a/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:16:20.765338+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141642_472291_9d8dc918",
+      "image_path": "2026-09-11/141642_472291_9d8dc918/color.png",
+      "depth_path": "2026-09-11/141642_472291_9d8dc918/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:16:42.279197+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141704_397278_6413394d",
+      "image_path": "2026-09-11/141704_397278_6413394d/color.png",
+      "depth_path": "2026-09-11/141704_397278_6413394d/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:17:04.199611+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141720_423361_5ace4811",
+      "image_path": "2026-09-11/141720_423361_5ace4811/color.png",
+      "depth_path": "2026-09-11/141720_423361_5ace4811/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:17:20.229470+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141742_710527_ba3da09e",
+      "image_path": "2026-09-11/141742_710527_ba3da09e/color.png",
+      "depth_path": "2026-09-11/141742_710527_ba3da09e/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:17:42.519170+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141759_722686_f8335180",
+      "image_path": "2026-09-11/141759_722686_f8335180/color.png",
+      "depth_path": "2026-09-11/141759_722686_f8335180/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "bag_color",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:17:59.532690+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141902_741201_fef7410e",
+      "image_path": "2026-09-11/141902_741201_fef7410e/color.png",
+      "depth_path": "2026-09-11/141902_741201_fef7410e/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "few",
+      "tags": [
+        "bag_color",
+        "overhang",
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:19:02.548486+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/141928_730020_623b13bc",
+      "image_path": "2026-09-11/141928_730020_623b13bc/color.png",
+      "depth_path": "2026-09-11/141928_730020_623b13bc/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "empty",
+      "tags": [
+        "bottom_visible"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:19:28.537696+07:00",
+      "sequence_group": "september_pallet_1",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/142408_612368_f5d20379",
+      "image_path": "2026-09-11/142408_612368_f5d20379/color.png",
+      "depth_path": "2026-09-11/142408_612368_f5d20379/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:24:08.421762+07:00",
+      "sequence_group": "september_pallet_2",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/143344_624698_7abc16ba",
+      "image_path": "2026-09-11/143344_624698_7abc16ba/color.png",
+      "depth_path": "2026-09-11/143344_624698_7abc16ba/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "pallet_offset",
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:33:44.432779+07:00",
+      "sequence_group": "september_pallet_3",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/143912_570403_50a5fad7",
+      "image_path": "2026-09-11/143912_570403_50a5fad7/color.png",
+      "depth_path": "2026-09-11/143912_570403_50a5fad7/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:39:12.375511+07:00",
+      "sequence_group": "september_pallet_4",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
+    },
+    {
+      "id": "2026-09-11/144016_941575_8390482e",
+      "image_path": "2026-09-11/144016_941575_8390482e/color.png",
+      "depth_path": "2026-09-11/144016_941575_8390482e/depth.png",
+      "width": 1920,
+      "height": 1080,
+      "state": "full",
+      "tags": [
+        "overhang"
+      ],
+      "reason": "",
+      "captured_at": "2026-09-11T14:40:16.744724+07:00",
+      "sequence_group": "september_pallet_4",
+      "old_sequence_hint": "",
+      "purpose": "draft_import"
     }
   ]
 }

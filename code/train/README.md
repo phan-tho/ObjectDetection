@@ -131,6 +131,22 @@ Chọn giai đoạn bằng `--stage`; mỗi giai đoạn là một kernel riêng
   `all_v4_960` và dự đoán ảnh chưa nhãn (`summary_fix.txt`).
 - `v5`: v5 cùng điều kiện với `fix`, gộp bảng với `fix` (`summary_v5.txt`); model cuối `all_v5_960`.
   Cần `fix` chạy xong.
+- `s960` / `n1280`: YOLO26s ảnh 960 / nano ảnh 1280, dataset v3, 2 seed, chấm `last.pt` và ensemble
+  2 seed (`summary_<stage>.txt`). Hai stage độc lập, chạy song song trên 2 tài khoản được.
+
+Sau khi tải về, chấm thêm `best.pt` trên máy để ghi kèm (README chính giữ cả hai số):
+
+```sh
+.venv/Scripts/python code/train/pipeline.py --fold red --val-groups august_red september_pallet_4 \
+    --model runs/kaggle_s960/runs/red_s960_s0/weights/best.pt --imgsz 960 --tag best_s960_s0 --methods plain
+```
+
+## Công cụ khác
+
+- `ensemble.py`: TTA 8 hướng xoay/lật và ensemble nhiều weights, gộp box bằng WBF, chấm như
+  `pipeline.py`. `--device 0` để chạy GPU (mặc định CPU).
+- `label_noise.py`: ước lượng nhiễu nhãn bằng cách so nhãn của cùng một vật trên các cặp ảnh gần như
+  giống hệt nhau.
 
 ## Quy ước góc
 
@@ -140,3 +156,15 @@ Labeler giờ lưu một dạng duy nhất (long-edge, như MMRotate `le90`): `w
 xuống). Bao đối xứng 180° nên đây cũng là góc kẹp cho robot. YOLO train từ 4 đỉnh và tự
 chuẩn hóa nội bộ, nên quy ước này không ảnh hưởng train; `predict.py` đổi output về cùng
 quy ước.
+
+## Đưa weights lên cho demo
+
+App demo (`code/demo/`) chỉ suy luận, lấy weights từ Kaggle dataset `tuananhpham29/bao-tai-obb-weights`
+(private, share cho tài khoản Kaggle của người chạy demo). Sau khi train được model tốt hơn: sửa
+`source` (đường dẫn `last.pt` trong `runs/`) và `name` trong `code/demo/models.json`, rồi
+
+```sh
+.venv/Scripts/python code/demo/weights.py publish -a tuananhpham29
+```
+
+Lệnh tạo version mới của dataset. Commit `models.json`; người chạy demo chạy lại `weights.py download`.

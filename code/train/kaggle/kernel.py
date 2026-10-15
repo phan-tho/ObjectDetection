@@ -82,8 +82,9 @@ def build_all():
         list(pool.map(lambda j: sh(*j), jobs))
 
 
-def train_all(runs):
-    """Mỗi GPU một luồng lấy job từ hàng đợi chung."""
+def train_all(runs, sync=False):
+    """Mỗi GPU một luồng lấy job từ hàng đợi chung. sync: copy run ra output ngay khi xong, để kernel
+    quá giờ (12 giờ) vẫn giữ được các run đã train."""
     q = queue.Queue()
     for r in runs:
         q.put(r)
@@ -96,6 +97,8 @@ def train_all(runs):
             except queue.Empty:
                 return
             sh(["code/train/train.py", "--name", name, "--device", str(dev), "--workers", "2", *extra], name)
+            if sync and (PROJ / "runs" / name).exists():
+                shutil.copytree(PROJ / "runs" / name, WORK / "runs" / name, dirs_exist_ok=True)
 
     threads = [threading.Thread(target=worker, args=(d,)) for d in range(n_gpu)]
     for t in threads:
@@ -338,5 +341,59 @@ def v5():
     print(f"xong sau {time.time() - t0:.0f}s", flush=True)
 
 
+E120 = ["--epochs", "120", "--close-mosaic", "20"]
+# stage -> (tên cấu hình, model, imgsz, tham số train thêm, các seed). Model m/l chạy mỗi seed một
+# kernel cho kịp giới hạn 12 giờ; tên stage dùng "-" vì slug kernel Kaggle không nhận "_".
+SCALE = {"s960": ("s960", "yolo26s-obb.pt", "960", [], (0, 1)),
+         "n1280": ("n1280", "yolo26n-obb.pt", "1280", [], (0, 1)),
+         "s960e120": ("s960e120", "yolo26s-obb.pt", "960", E120, (0, 1)),
+         "m960-s0": ("m960", "yolo26m-obb.pt", "960", E120, (0,)),
+         "m960-s1": ("m960", "yolo26m-obb.pt", "960", E120, (1,)),
+         "l960-s0": ("l960", "yolo26l-obb.pt", "960", E120 + ["--batch", "6"], (0,)),
+         "l960-s1": ("l960", "yolo26l-obb.pt", "960", E120 + ["--batch", "6"], (1,))}
+
+
+def scale():
+    """Model to hơn / ảnh to hơn / train lâu hơn, cùng dataset v3 (30 bản augment). Chấm last.pt và
+    best.pt bằng pipeline.py như vòng fix; có 2 seed trong kernel thì thêm ensemble + TTA (ensemble.py).
+    Mốc so: nano v3 960 = 0.815, s960 (60 epoch) = 0.864."""
+    t0 = time.time()
+    setup()
+    cfg, model, imgsz, extra, seeds = SCALE[STAGE]
+    jobs = [(["code/train/build_dataset.py", "--name", f"{fold}_v3", "--val-groups", *groups, "--aug", "30",
+              "--heavy"], f"build_{fold}_v3") for fold, groups in FOLDS.items()]
+    with ThreadPoolExecutor(4) as pool:
+        list(pool.map(lambda j: sh(*j), jobs))
+    print(f"build xong sau {time.time() - t0:.0f}s", flush=True)
+    y = ["--model", model, "--imgsz", imgsz, *extra]
+    train_all([(f"{fold}_{cfg}_s{seed}", ["--data", f"{fold}_v3", *y, "--seed", str(seed)])
+               for seed in seeds for fold in FOLDS], sync=True)
+    print(f"train xong sau {time.time() - t0:.0f}s", flush=True)
+    for fold, groups in FOLDS.items():
+        last = []
+        for seed in seeds:
+            for kind, tag in (("last", f"{cfg}_s{seed}"), ("best", f"best_{cfg}_s{seed}")):
+                w = PROJ / "runs" / f"{fold}_{cfg}_s{seed}" / "weights" / f"{kind}.pt"
+                if w.exists():
+                    sh(["code/train/pipeline.py", "--fold", fold, "--val-groups", *groups, "--model", str(w),
+                        "--imgsz", imgsz, "--tag", tag, "--methods", "plain"], f"pipeline_{fold}_{tag}")
+                    if kind == "last":
+                        last.append(w)
+        if len(last) > 1:
+            sh(["code/train/ensemble.py", "--fold", fold, "--val-groups", *groups, "--models", *map(str, last),
+                "--imgsz", imgsz, "--tag", f"ens_{cfg}", "--device", "0", "--out", "ensemble.jsonl"],
+               f"ensemble_{fold}_{cfg}")
+        print(f"chấm {fold} xong sau {time.time() - t0:.0f}s", flush=True)
+    pairs = [a for f, g in FOLDS.items()
+             for a in ("--fold", str(PROJ / "runs" / f"{f}_{cfg}_s{seeds[0]}" / "weights" / "last.pt"), *g)]
+    sh(["code/train/analyze_errors.py", "--imgsz", imgsz, *pairs, "--out", f"runs/errors_{STAGE}"],
+       f"errors_{STAGE}")
+    table = summarize_fix()
+    (PROJ / "runs" / f"summary_{STAGE}.txt").write_text(table)
+    shutil.copytree(PROJ / "runs", WORK / "runs", dirs_exist_ok=True)
+    print(table)
+    print(f"xong sau {time.time() - t0:.0f}s", flush=True)
+
+
 if __name__ == "__main__":
-    {"methods": methods, "fix": fix, "v5": v5}.get(STAGE, main)()
+    {"methods": methods, "fix": fix, "v5": v5, **{s: scale for s in SCALE}}.get(STAGE, main)()

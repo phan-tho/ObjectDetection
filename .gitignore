@@ -13,6 +13,7 @@ _download_*/
 /datasets/
 /runs/
 *.pt
+/weights/demo/
 *.onnx
 __pycache__/
 

@@ -1,0 +1,16 @@
+{
+  "note": "Weights đã train sẵn, app chỉ suy luận. Mỗi fold một model, lúc train không dùng các sequence_group của fold đó; app chạy mỗi ảnh bằng model của fold chứa ảnh, nên mọi ảnh demo đều là cảnh model chưa thấy. Nhóm fold giống FOLDS trong code/train/kaggle/kernel.py. 'source' chỉ dùng khi publish.",
+  "kaggle_dataset": "tuananhpham29/bao-tai-obb-weights",
+  "name": "YOLO26s-OBB, ảnh 960, augment v3, 60 epoch (mAP50-95 0.864, 4 fold)",
+  "imgsz": 960,
+  "folds": {
+    "red": {"groups": ["august_red", "september_pallet_4"], "weights": "weights/demo/red.pt",
+            "source": "runs/kaggle_s960/runs/red_s960_s0/weights/last.pt"},
+    "sep3": {"groups": ["september_pallet_3", "september_pallet_2"], "weights": "weights/demo/sep3.pt",
+             "source": "runs/kaggle_s960/runs/sep3_s960_s0/weights/last.pt"},
+    "green": {"groups": ["august_green_and_empty"], "weights": "weights/demo/green.pt",
+              "source": "runs/kaggle_s960/runs/green_s960_s0/weights/last.pt"},
+    "sep1": {"groups": ["september_pallet_1"], "weights": "weights/demo/sep1.pt",
+             "source": "runs/kaggle_s960/runs/sep1_s960_s0/weights/last.pt"}
+  }
+}

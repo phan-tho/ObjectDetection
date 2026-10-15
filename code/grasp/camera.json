@@ -1,0 +1,7 @@
+{
+  "note": "Orbbec Gemini 2, serial AY6KC5200E8. Méo ống kính lấy từ bao-tai/*/meta.json (dữ liệu 2026-09-11 không ghi). cam_to_robot: ma trận 4x4 (mm) từ hiệu chuẩn hand-eye; null = chỉ xuất toạ độ camera.",
+  "distortion": {"k1": 52.0297966003418, "k2": -115.13096618652344, "p1": 0.00018785626161843538,
+                 "p2": -9.710360609460622e-05, "k3": 121.73377227783203, "k4": 51.84341049194336,
+                 "k5": -114.70136260986328, "k6": 121.8526840209961},
+  "cam_to_robot": null
+}

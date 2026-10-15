@@ -1,12 +1,64 @@
 # Nhận diện bao để robot gắp
 
-**Mục tiêu:** RGB → tìm pallet mục tiêu gần giữa ảnh → tìm bao → dùng depth/rule chọn bao trên cùng có thể gắp → hiệu chuẩn tọa độ sang XYZ robot. Camera cần thấy toàn bộ pallet mục tiêu. OBB chưa phải nhãn điểm gắp/XYZ.
+Ảnh màu + depth từ camera nhìn xuống pallet → tìm pallet mục tiêu (gần giữa ảnh) → tìm từng bao (box
+xoay, OBB) → chọn bao trên cùng không bị đè → toạ độ XYZ và góc kẹp cho robot. Camera cần thấy toàn
+bộ pallet mục tiêu.
 
-**Hiện tại:** đã phân loại 123 lượt chụp (105 dùng được, 18 loại), đã đánh nhãn và xác nhận 25 ảnh RGB đại diện: **49 box pallet, 254 box bao**. Đã fine-tune YOLO26n-OBB có augment trên Kaggle (xem [Kết quả thử nghiệm](#kết-quả-thử-nghiệm)); model dự đoán được 80 lượt chưa nhãn, cần người rà để làm vòng nhãn tiếp theo.
+## Kết quả
 
-## Dữ liệu đang có
+**Nhận diện** (mAP50-95, trung bình 4 fold chia theo nhóm cảnh, chấm model epoch cuối `last.pt`;
+xem [Cách đánh giá](#cách-đánh-giá)):
 
-Số dưới đây tính theo lượt chụp; một lượt có thể mang nhiều đặc điểm. Cột 25 ảnh là tập con của 105 lượt dùng được.
+| Cấu hình | mAP50-95 | Ghi chú |
+|---|---:|---|
+| YOLO26n, ảnh 640, không augment | 0.724 | Đối chứng |
+| YOLO26n, ảnh 640, augment v1 | 0.798 | Augment là thay đổi có tác dụng lớn nhất |
+| YOLO26n, ảnh 960, augment v3 | 0.815 | Ảnh 960 giúp bao nhỏ; thêm augment v4/v5 không tăng nữa |
+| **YOLO26s, ảnh 960, augment v3** | **0.864** | **Model đang dùng.** Bao 0.835, pallet 0.892 |
+| YOLO26s, 2 seed + xoay/lật 8 hướng | 0.877 | Chậm hơn 16 lần |
+
+- Model tìm thấy gần hết bao (mAP50 trung bình 0.97, từng fold 0.93–0.99). Điểm còn mất chủ yếu do box chưa khít, ở bao bị bao
+  khác đè và bao nhỏ sát mép ảnh.
+- Tốc độ nhận diện trên laptop (RTX 3050, ảnh 960): 22 ms/ảnh với GPU, 176 ms/ảnh với CPU.
+- Hạn chế: chỉ có 25 ảnh có nhãn, chưa có tập test độc lập. Chênh lệch dưới khoảng 2 điểm coi như bằng
+  nhau.
+
+**Chọn bao cần gắp** (`code/grasp/`, rule-based trên box + depth, không cần train):
+- 25 ảnh có nhãn tay: 23 ảnh có bao đều chọn được bao để gắp, bao gắp trước không lần nào là bao bị che;
+  2 ảnh pallet rỗng báo đúng.
+- 80 ảnh chưa nhãn, dùng box của model: 76 ảnh chọn được bao, 4 ảnh pallet rỗng.
+- Kích thước bao đo từ depth trung bình 685×443 mm (thật 700×450), tức đổi pixel sang mm đúng.
+- Toạ độ đang ở hệ camera; cần hiệu chuẩn hand-eye để ra hệ robot.
+
+## Cách chạy
+
+**Demo** (chỉ suy luận, không train). Hướng dẫn cài đầy đủ cho Windows/macOS/Linux:
+`code/demo/README.md`.
+
+```sh
+pip install -r requirements.txt                    # trong .venv; có GPU thì cài torch CUDA trước
+python code/train/download_data.py                 # ảnh gốc, ~2.4 GB, cần token Kaggle
+python code/demo/weights.py download               # weights, cần được share dataset trên Kaggle
+streamlit run code/demo/streamlit_app.py
+```
+
+**Các phần khác:**
+
+| Việc | Ở đâu |
+|---|---|
+| Train, đánh giá, phân tích lỗi (chạy trên Kaggle) | `code/train/README.md` |
+| Gán nhãn, sửa nhãn nháp | `code/obb_labeler/README.md` |
+| Chọn bao + XYZ từ file dự đoán | `code/grasp/README.md` |
+| Phân loại lượt chụp | `code/image_sorter/README.md` |
+
+## Dữ liệu
+
+123 lượt chụp (camera Orbbec Gemini 2, ảnh màu 1920×1080 + depth đã khớp ảnh màu), trong đó 105 dùng
+được, 18 loại. **25 ảnh đã gán nhãn và kiểm tra: 49 box pallet, 254 box bao.** 80 lượt còn lại đã được
+nạp vào labeler dạng nháp (dự đoán của model), chờ người sửa.
+
+Số dưới đây tính theo lượt chụp; một lượt có thể mang nhiều đặc điểm. Cột 25 ảnh là tập con của 105
+lượt dùng được.
 
 | Trạng thái / đặc điểm | Dùng được | Bộ 25 ảnh |
 |---|---:|---:|
@@ -23,36 +75,47 @@ Số dưới đây tính theo lượt chụp; một lượt có thể mang nhi�
 | Bao tràn biên pallet | 98 | 22 |
 | Hở đáy pallet | 17 | 7 |
 
-25 ảnh gồm bao đỏ, xanh, trắng, nâu; cảnh nhiều pallet; chuỗi tháo hàng còn 3 → 2 → 1 → 0 bao trong khi pallet bên cạnh vẫn đầy. Bộ hiện thiên về pallet đầy; cần bổ sung cảnh vơi, ít bao và biến dạng sau vòng thử đầu.
+- 25 ảnh gồm bao đỏ, xanh, trắng, nâu; cảnh nhiều pallet; chuỗi tháo hàng còn 3 → 2 → 1 → 0 bao trong
+  khi pallet bên cạnh vẫn đầy. Bộ hiện thiên về pallet đầy.
+- Tất cả 105 lượt thuộc **6 chuỗi chụp** (`sequence_group`). 80 lượt chưa nhãn nằm xen giữa các lượt
+  đã có nhãn, cách nhau vài giây. Muốn có tập test độc lập phải chụp thêm phiên mới.
+- Hai lớp nhãn: `0=pallet_region` (đế pallet và mọi bao trên đó, kể cả bao tràn biên), `1=bag` (thân
+  bao; bao bị đè chỉ khoanh phần còn thấy).
 
-## File và bước tiếp theo
+| Dữ liệu | Ở đâu |
+|---|---|
+| Ảnh màu/depth gốc (không vào git, tải từ Kaggle `phanbth/bao-tai-1`, `bao-tai-2`) | `bao-tai/`, `2026-09-11/` |
+| Phân loại lượt chụp | `code/image_sorter/results/labels.json`, `labels.csv` |
+| Danh sách ảnh, nhóm chuỗi chụp | `code/obb_labeler/selection.json` |
+| Nhãn (bản gốc, gồm cả nháp) | `code/obb_labeler/results/annotations.json`; JSON còn giữ pallet mục tiêu, liên kết bao → pallet, cờ che khuất/cắt biên |
+| Bản xuất YOLO-OBB của ảnh đã kiểm tra | `code/obb_labeler/results/yolo/` |
 
-- **RGB/depth gốc:** `bao-tai/`, `2026-09-11/`; có nhiều frame mỗi lượt.
-- **Phân loại:** `code/image_sorter/results/labels.json` và `labels.csv`.
-- **25 ảnh + nhãn:** `code/obb_labeler/selection.json`; `code/obb_labeler/results/annotations.json` là bản gốc, `manifest.csv` giữ nhóm cảnh; `yolo/` là bản xuất OBB chuẩn hóa. Hai lớp: `0=pallet_region` (gồm đế và bao tràn biên), `1=bag` (thân bao). JSON còn giữ pallet mục tiêu, liên kết bao→pallet và cờ che khuất/cắt biên.
-- **Vòng đầu:** rà nhãn → fine-tune model OBB nhẹ có pretrained trên bộ seed 25 ảnh → dự đoán 80 lượt dùng được còn lại → người sửa → train lại. Chia train/val theo cảnh/chuỗi, không random các frame gần giống nhau; cần test độc lập.
-
-## Kết quả thử nghiệm
-
-Model: **YOLO26n-OBB** (Ultralytics 8.4, nano, ~2.4M tham số, pretrained DOTA), 2 lớp
-`pallet_region` và `bag`. Train trên GPU T4 của Kaggle: AdamW (Ultralytics tự chọn lr ≈ 0.0017),
-batch 8, 60 epoch, seed 0; augment online xoay 0–180°, lật, scale ±50%, mosaic. Code và cách chạy
-lại: `code/train/README.md`.
-
-### Cách đánh giá
+## Cách đánh giá
 
 - **Chia theo nhóm cảnh, 4 fold phủ cả 25 ảnh** (`red` 4 ảnh, `sep3` 3, `green` 8, `sep1` 10): mỗi fold
   giữ lại một/vài `sequence_group` làm val, train trên phần còn lại. Mỗi ảnh làm val đúng một lần,
   không ảnh nào vừa train vừa val. Không chia ngẫu nhiên, vì các frame cùng chuỗi gần như trùng nhau.
 - Chỉ số chính **mAP50-95** trung bình 2 lớp (IoU xoay kiểu probiou của Ultralytics). mAP50 gần như
   bão hòa; mAP50-95 phản ánh cả độ khít của box, cần cho robot gắp.
-- **Chấm bằng model ở epoch cuối (`last.pt`)**, không dùng `best.pt`. `best.pt` là epoch có mAP val
-  cao nhất, tức đã dùng chính tập val để chọn, nên điểm bị thổi lên. Ví dụ fold `red` không augment:
-  0.880 ở epoch 8, còn epoch cuối chỉ 0.722.
+- **"Ảnh 640/960/1280"** là kích thước ảnh đưa vào model (`imgsz`): ảnh gốc 1920×1080 được thu nhỏ
+  để cạnh dài bằng số này. Ảnh càng lớn thì bao nhỏ càng rõ, nhưng chạy chậm hơn.
+- **Số chính chấm bằng model ở epoch cuối (`last.pt`)**. `best.pt` là epoch có mAP val cao nhất, tức
+  đã dùng chính tập val để chọn, nên điểm bị thổi lên. Ví dụ fold `red` không augment: 0.880 ở
+  epoch 8, còn epoch cuối chỉ 0.722. Từ vòng 4, số `best.pt` vẫn được ghi kèm để tham khảo, gồm 2
+  cột: chấm lại bằng `pipeline.py` trên ảnh gốc (cùng cách với `last.pt`), và điểm Ultralytics val
+  lúc train (chính tập dùng để chọn, nên cao nhất).
 - Vẫn còn hạn chế: không có tập test độc lập (cấu hình được chọn trên chính 4 fold này), fold nhỏ,
   và trước vòng 4 mỗi cấu hình chỉ chạy 1 seed. Chạy lại cùng cấu hình từng lệch ~2 điểm, nên
   chênh lệch dưới ~2 điểm coi như hòa.
-- Số của vòng 1 và vòng 3 bên dưới vẫn chấm bằng `best.pt` (đã ghi chú). Vòng 2 có cả hai.
+- Số của vòng 1 và vòng 3 bên dưới vẫn chấm bằng `best.pt` (đã ghi chú). Vòng 2 dùng trung bình 10
+  epoch cuối, tương đương `last.pt`.
+
+## Chi tiết các vòng thử nghiệm
+
+Model: **YOLO26-OBB** (Ultralytics 8.4, pretrained DOTA), 2 lớp `pallet_region` và `bag`. Vòng 1–5
+dùng bản nano (`n`, 2.6M tham số), vòng 6 thử bản `s` (10.5M). Train trên GPU T4 của Kaggle: AdamW
+(Ultralytics tự chọn lr ≈ 0.0017), batch 8, 60 epoch; augment online xoay 0–180°, lật, scale ±50%,
+mosaic. Code và cách chạy lại: `code/train/README.md`.
 
 ### Vòng 1: so sánh cấu hình (2 fold, 7 ảnh val, `best.pt`)
 
@@ -106,10 +169,10 @@ kiểm tra khớp tới 4 chữ số khi cùng tiền xử lý.
   đầu ra cho robot, để bỏ báo nhầm ngoài pallet.
 - NMS chặt hơn khi suy luận (IoU 0.5 hoặc 0.4 thay vì 0.7) cũng không giúp (kiểm tra với `last.pt`).
 
-### Vòng 4: sửa các case kém (đang chạy)
+### Vòng 4: sửa các case kém (augment v4)
 
-Phân tích lỗi cấu hình tốt nhất (v3 960, `last.pt`, cả 25 ảnh, `runs/errors_v3_960/`). Lỗi = bỏ sót
-hoặc box lệch (IoU < 0.75):
+Phân tích lỗi cấu hình tốt nhất của vòng 2 (v3 960, `last.pt`, cả 25 ảnh, `runs/errors_v3_960/`).
+Lỗi = bỏ sót hoặc box lệch (IoU < 0.75):
 
 | Nhóm bao (254 bao) | Lỗi |
 |---|---:|
@@ -129,24 +192,111 @@ Báo nhầm ở conf ≥ 0.25: 28 box bao, 19 box pallet. Ảnh kém nhất và 
 | `session_062` | Pallet sắt rỗng bị sót, chỉ khoanh được từng mảnh. Cả bộ chỉ có 1 pallet sắt rỗng | `paste_empty_pallet`: dán pallet rỗng (cắt từ ảnh train) vào chỗ trống |
 | `142952`, `142402` | Nhiều pallet, bao bọc màng co, lát bao nhỏ sát mép | Giữ ảnh 960. Phần còn lại là giới hạn của dữ liệu |
 
-So sánh công bằng ở vòng 4: v1, v3, v4 **cùng ảnh 960, cùng 30 bản augment/ảnh, mỗi cấu hình 2 seed**,
-chấm `last.pt` bằng `pipeline.py`. Model cuối: v4 960 trên cả 25 ảnh.
+So sánh công bằng: v1, v3, v4 **cùng ảnh 960, cùng 30 bản augment/ảnh**, v3 và v4 chạy 2 seed (v1
+chỉ 1 seed), chấm bằng `pipeline.py` (`runs/kaggle_fix/`). Số theo fold là trung bình các seed.
 
-### Model và dự đoán hiện có
+| Augment | red | sep3 | green | sep1 | **TB `last.pt`** | `best.pt` (chấm lại) | `best.pt` (Ultralytics val) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| v1 | 0.802 | 0.663 | 0.790 | 0.921 | **0.794** | 0.767 | 0.822 |
+| v3 | 0.826 | 0.724 | 0.796 | 0.917 | **0.815** | 0.829 | 0.851 |
+| v4 | 0.810 | 0.732 | 0.781 | 0.912 | **0.809** | 0.825 | 0.848 |
 
-- Model cuối vòng 2 (cả 25 ảnh, augment v3, 100 epoch, không có val): `runs/kaggle/runs/all_v3/weights/last.pt`
-  và bản 960 `all_v3_960`. Dự đoán 80 lượt chưa nhãn: `runs/kaggle/runs/predict_all_v3*/`
-  (`predictions.json` cùng schema box với `annotations.json`, `vis/*.jpg` để xem).
+- **v4 không hơn v3** (chênh 0.6 điểm, nằm trong nhiễu; 2 seed của v4 lệch nhau 2.7 điểm). Dán bao đè
+  bao không làm giảm lỗi ở bao bị đè: 45% với v3, 52% với v4. v3 hơn v1 khoảng 2 điểm.
+- `best.pt` trên Ultralytics val cao hơn `last.pt` 3–4 điểm. Chấm lại cùng các ảnh đó bằng ảnh gốc thì
+  chỉ còn hơn 1–2 điểm, v1 còn thấp hơn 2.7 điểm. Nên vẫn lấy `last.pt` làm số chính.
+- Model cuối: v4 960 trên cả 25 ảnh (`runs/kaggle_fix/runs/all_v4_960/`).
+
+### Vòng 5: augment v5 (ánh sáng theo lớp xếp)
+
+v5 (`--v5`) thêm vào v4: bao lớp dưới tối hơn và có bóng ở mép tiếp giáp, mỗi bao lệch màu một chút,
+vệt bóng loáng và cháy sáng, bao dán bị phồng/méo. Cùng điều kiện với vòng 4 (`runs/kaggle_v5/`).
+
+| Augment | red | sep3 | green | sep1 | **TB `last.pt`** | `best.pt` (chấm lại) | `best.pt` (Ultralytics val) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| v3 (vòng 4) | 0.826 | 0.724 | 0.796 | 0.917 | **0.815** | 0.829 | 0.851 |
+| v5 | 0.781 | 0.720 | 0.779 | 0.902 | **0.796** | 0.806 | 0.838 |
+
+- **v5 kém v3 khoảng 2 điểm**, cả 2 seed (0.796, 0.795) đều thấp hơn 2 seed của v3 (0.820, 0.810).
+- Từ v3 đến v5, thêm augment không còn tăng điểm. Dừng hướng thêm augment.
+
+### Vòng 6: model to hơn, ảnh lớn hơn, ensemble
+
+Cùng augment v3 (30 bản/ảnh), 2 seed, chấm bằng `pipeline.py` (`runs/kaggle_s960/`, `runs/kaggle_n1280/`).
+
+| Model | Ảnh | red | sep3 | green | sep1 | **TB `last.pt`** | bao | pallet | `best.pt` (chấm lại) | `best.pt` (Ultralytics val) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| YOLO26n (vòng 4) | 960 | 0.826 | 0.724 | 0.796 | 0.917 | **0.815** | 0.785 | 0.846 | 0.829 | 0.851 |
+| YOLO26n | 1280 | 0.839 | 0.678 | 0.764 | 0.897 | **0.794** | 0.791 | 0.797 | 0.798 | 0.838 |
+| **YOLO26s** | 960 | 0.860 | 0.825 | 0.829 | 0.943 | **0.864** | 0.835 | 0.892 | 0.866 | 0.884 |
+
+- **YOLO26s tốt hơn rõ: +4.9 điểm.** Cả 2 seed (0.856, 0.872) đều cao hơn seed tốt nhất của nano
+  (0.820). Tăng ở cả bao và pallet, nhiều nhất ở `sep3` (+10 điểm, nhiều bao nhỏ).
+- So lỗi trên cả 25 ảnh (seed 0, `runs/kaggle_s960/runs/errors_s960/`): số bao sai giảm từ 56 xuống
+  39. Bao bị đè sai 45% → 36%, bao 1–2% ảnh sai 43% → 28%. Báo nhầm bao 28 → 17, báo nhầm pallet
+  19 → 6. Bao dưới 1% ảnh vẫn sai 11/12.
+- **Ảnh 1280 không giúp:** nano ở 1280 kém nano ở 960 khoảng 2 điểm. Dừng hướng này.
+- Tốc độ, đo trên laptop (RTX 3050, ảnh 960, 1 ảnh/lần): nano 20 ms GPU / 91 ms CPU; YOLO26s 22 ms
+  GPU / 176 ms CPU. Cần đo lại trên máy của robot.
+
+**Ensemble và TTA** (`code/train/ensemble.py`): chạy model trên 8 hướng xoay/lật ảnh, rồi gộp box của
+các lần chạy bằng WBF (trung bình có trọng số).
+
+| Cách chạy | nano 960 | YOLO26s 960 | Thời gian |
+|---|---:|---:|---:|
+| 1 model (seed 0) | 0.820 | 0.856 | 1× |
+| 1 model + TTA 8 hướng | 0.813 | 0.863 | 8× |
+| 2 seed | 0.807 | 0.873 | 2× |
+| 2 seed + TTA 8 hướng | 0.837 | **0.877** | 16× |
+| 4 model (v3 + v4, mỗi bản 2 seed) + TTA 8 hướng | 0.841 | – | 32× |
+
+- Ensemble 2 seed + TTA tăng thêm 1–2 điểm nhưng chạy chậm 16 lần. Chỉ đáng dùng nếu robot không cần nhanh.
+- Gộp bằng NMS thay vì WBF thì kém hẳn.
+
+**Nhiễu nhãn** (`code/train/label_noise.py`): so nhãn của cùng một vật trên các cặp ảnh gần như giống
+hệt nhau (45 cặp bao, 11 cặp pallet). mAP OBB của Ultralytics tính IoU bằng **probiou**, nên phải đọc
+theo probiou. Hai lần khoanh cùng một bao khớp với probiou trung vị 0.959, pallet 0.980. Ước tính
+trần mAP50-95 do nhiễu nhãn: **khoảng 0.93–0.96 với bao, 0.98 với pallet**. Vậy mức 0.9x vẫn đạt
+được. (Bản trước ghi trần 0.81: con số đó đo bằng IoU đa giác, sai thước đo.) Mẫu còn nhỏ, số chỉ
+để tham khảo.
+
+## Chọn bao cần gắp
+
+Rule-based, chạy sau bước nhận diện (`code/grasp/pick_xyz.py`, chi tiết và số đo nhiễu depth trong
+`code/grasp/README.md`):
+
+1. Pallet mục tiêu là pallet gần giữa ảnh; bao của nó là bao có tâm nằm trong pallet.
+2. Mặt trên mỗi bao: khớp mặt phẳng lên depth ở 60% vùng giữa box. Điểm gắp là giao của tia qua tâm box
+   với mặt phẳng; góc kẹp theo cạnh dài của box.
+3. Độ cao đo theo hướng "lên" của chồng bao (camera có thể nghiêng tới 15°). Chỉ xét bao lớp trên cùng.
+4. Bỏ bao bị đè: so depth đo thật với mặt bao ngay chỗ hai box chạm nhau.
+5. Gắp bao cao nhất trước.
+
+Depth nhiễu 4–19 mm mỗi pixel, nhỏ so với độ dày một lớp bao (130 mm). Code không đọc depth của pixel lẻ
+mà khớp mặt phẳng trên hàng nghìn điểm. Không cần lọc ảnh depth.
+
+## Model và dự đoán hiện có
+
+- **YOLO26s 960** mới có bản theo fold: `runs/kaggle_s960/runs/<fold>_s960_s{0,1}/weights/last.pt`.
+  Bản seed 0 là weights của app demo (Kaggle dataset `tuananhpham29/bao-tai-obb-weights`). Chưa train
+  bản trên cả 25 ảnh.
+- Model nano trên cả 25 ảnh (100 epoch, không có val): v3 640/960 `runs/kaggle/runs/all_v3*/`,
+  v4 960 `runs/kaggle_fix/runs/all_v4_960/`, v5 960 `runs/kaggle_v5/runs/all_v5_960/`. Dự đoán 80
+  lượt chưa nhãn: `predict_all_*` trong cùng thư mục (`predictions.json` cùng schema box với
+  `annotations.json`, `vis/*.jpg` để xem).
 - Bản vòng 1 (augment v2) ở `runs/kaggle_v1/`. Thư mục `runs/` không đưa lên git; tải lại bằng
-  `code/train/kaggle/push.py -a <tài khoản> [--stage methods] --pull`.
+  `code/train/kaggle/push.py -a <tài khoản> --stage <stage> --pull`.
 
-### Hướng tiếp theo
+## Hướng tiếp theo
 
-1. **Thêm nhãn là đòn bẩy lớn nhất**: nạp 80 dự đoán vào `obb_labeler` dạng nháp, người sửa và xác
-   nhận, rồi train lại với ~100 ảnh. Ưu tiên cảnh vơi, ít bao, nhiều pallet, bao bọc màng co.
-2. Có ~100 ảnh rồi thì tách hẳn một **tập test độc lập** (chuỗi chụp chưa dùng), không dùng để chọn
-   cấu hình.
-3. Nếu bao nhỏ vẫn lỗi: train ảnh 960, hoặc crop vùng pallet mục tiêu rồi mới tìm bao (hai giai đoạn).
+1. **Train lâu hơn và model to hơn** (đang chạy trên Kaggle): YOLO26s 120 epoch, YOLO26m, YOLO26l, rồi
+   ensemble giữa các model. Mục tiêu 0.9x.
+2. **Sửa 80 ảnh nháp** trong labeler (`code/obb_labeler/README.md`, mục "Sửa nhãn nháp"), rồi train lại
+   với ~100 ảnh.
+3. **Thống nhất cách khoanh bao bị đè** và sửa lại khoảng 56 nhãn loại này. Đây là nhóm lỗi lớn nhất.
+4. **Chụp thêm phiên mới** (cảnh vơi, ít bao, nhiều pallet, bao bọc màng co) để có tập test độc lập.
+5. Train model cuối trên toàn bộ ảnh có nhãn, cập nhật weights cho demo.
+6. Hiệu chuẩn hand-eye và thử trên robot; đo tốc độ trên máy của robot.
 
 ## Điểm cần nhớ
 

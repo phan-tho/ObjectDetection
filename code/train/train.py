@@ -30,10 +30,11 @@ def main():
     ap.add_argument("--freeze", type=int, default=0,
                     help="đóng băng N lớp đầu (backbone pretrained), giảm học vẹt khi ít ảnh")
     ap.add_argument("--no-geo", action="store_true", help="tắt augment hình học online (ablation)")
+    ap.add_argument("--close-mosaic", type=int, default=10, help="số epoch cuối tắt mosaic")
     args = ap.parse_args()
 
     geo = dict(degrees=180, flipud=0.5, fliplr=0.5, scale=0.5, translate=0.15,
-               perspective=0.0003, mosaic=1.0, close_mosaic=10)
+               perspective=0.0003, mosaic=1.0, close_mosaic=args.close_mosaic)
     if args.no_geo:
         geo = dict(degrees=0, flipud=0, fliplr=0, scale=0, translate=0, perspective=0, mosaic=0)
     model = YOLO(args.model)
