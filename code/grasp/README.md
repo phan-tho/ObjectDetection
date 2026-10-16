@@ -14,8 +14,32 @@ Kết quả trong `runs/grasp/<tên>/`:
   `below_top_mm`, `size_mm`.
 - `vis/*.jpg`: khung xanh lá = gắp trước, vàng = gắp được, đỏ = chưa gắp được.
 
-Toạ độ camera theo quy ước OpenCV: X sang phải, Y xuống dưới, Z hướng ra trước, đơn vị mm. Muốn ra
-toạ độ robot, điền ma trận 4×4 `cam_to_robot` (từ hiệu chuẩn hand-eye) vào `camera.json`.
+Toạ độ camera theo quy ước OpenCV: X sang phải, Y xuống dưới, Z hướng ra trước, đơn vị mm.
+
+## Ra toạ độ robot (camera gắn trên tay robot)
+
+Lúc chụp, camera nằm ở `T_base_cam = T_base_flange · T_flange_cam`:
+- `T_base_flange`: tư thế mặt bích do bộ điều khiển robot trả về lúc chụp. Tay phải đứng yên khi chụp.
+  Kiểu số (rpy / kuka_abc / rotvec / quat / matrix) đặt ở `robot_pose_format` trong `camera.json`,
+  chi tiết trong [robot_pose.py](robot_pose.py).
+- `T_flange_cam`: cố định, đo một lần bằng hiệu chuẩn hand-eye, lưu ở `cam_to_flange`.
+
+Hiệu chuẩn bằng bảng ChArUco ([handeye.py](handeye.py)):
+```sh
+.venv/Scripts/python code/grasp/handeye.py board                 # ảnh bảng để in A3 -> calib/charuco_board.png
+.venv/Scripts/python code/grasp/handeye.py solve calib/handeye   # giải, ghi cam_to_flange vào camera.json
+.venv/Scripts/python code/grasp/handeye.py selftest              # kiểm code bằng ảnh giả lập
+```
+Bảng đặt cố định, tay robot chụp từ 15–25 tư thế khác nhau, mỗi lần lưu ảnh và tư thế mặt bích. Trang
+Camera trực tiếp của app demo có nút lưu, ảnh vào `calib/handeye/`. Giải bằng phương pháp Park–Martin
+(bản OpenCV 5 đang dùng không có `cv2.calibrateHandEye`). Trên ảnh giả lập, kết quả lệch đáp án 0.4 mm
+và 0.02°. Với dữ liệu thật, xem độ lệch vị trí bảng giữa các lần chụp mà `solve` in ra: vài mm là tốt.
+
+Có hệ robot thì trang Camera trực tiếp giữ số # của bao theo vị trí: bao cách bao đã thấy ở lần chụp trước
+dưới 70 mm giữ số cũ. Lớp bao dày 130 mm, nên bao lộ ra dưới bao vừa gắp được số mới. Không cần dán mã lên
+bao.
+
+Camera gắn cố định (không trên tay) thì bỏ qua phần trên, điền thẳng `cam_to_robot`.
 
 ## Các bước
 
@@ -63,7 +87,9 @@ Trên dự đoán của model (80 ảnh chưa nhãn): 76 ảnh chọn được b
 
 ## Cần làm thêm trước khi chạy trên robot
 
-- **Hiệu chuẩn hand-eye** để có `cam_to_robot`. Khi đó độ cao cũng đo theo trục Z robot, chính xác hơn.
+- **Hiệu chuẩn hand-eye** với robot thật để có `cam_to_flange` (code đã có, xem mục trên). Khi đó độ cao
+  cũng đo theo trục Z robot, chính xác hơn.
+- **Đọc tư thế mặt bích tự động** từ bộ điều khiển robot (hiện nhập tay trên app), tuỳ hãng robot.
 - **Kiểm sai số tuyệt đối của Z** bằng vật có độ cao biết trước. Camera stereo có thể lệch vài cm ở
   khoảng 2–3 m. Nên để robot hạ xuống có cảm biến (giác hút có cảm biến áp, hoặc lực) thay vì tin tuyệt
   đối vào Z.

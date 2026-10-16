@@ -20,3 +20,5 @@ __pycache__/
 .kaggle/
 reports/
 .DS_Store
+# Ảnh hiệu chuẩn hand-eye và bảng ChArUco (riêng từng robot)
+/calib/
