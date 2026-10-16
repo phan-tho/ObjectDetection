@@ -1,5 +1,5 @@
 {
-  "note": "Weights đã train sẵn, app chỉ suy luận. Mỗi fold một model, lúc train không dùng các sequence_group của fold đó; app chạy mỗi ảnh bằng model của fold chứa ảnh, nên mọi ảnh demo đều là cảnh model chưa thấy. Nhóm fold giống FOLDS trong code/train/kaggle/kernel.py. 'source' chỉ dùng khi publish.",
+  "note": "Weights đã train sẵn, app chỉ suy luận. Mỗi fold một model, lúc train không dùng các sequence_group của fold đó; app chạy mỗi ảnh bằng model của fold chứa ảnh, nên mọi ảnh demo đều là cảnh model chưa thấy. Nhóm fold giống FOLDS trong code/train/kaggle/kernel.py. 'source' chỉ dùng khi publish. 'live': model nhẹ cho trang camera trực tiếp, train trên mọi ảnh có nhãn (không còn ảnh model chưa thấy để đánh giá).",
   "kaggle_dataset": "tuananhpham29/bao-tai-obb-weights",
   "name": "YOLO26s-OBB, ảnh 960, augment v3, 60 epoch (mAP50-95 0.864, 4 fold)",
   "imgsz": 960,
@@ -12,5 +12,7 @@
               "source": "runs/kaggle_s960/runs/green_s960_s0/weights/last.pt"},
     "sep1": {"groups": ["september_pallet_1"], "weights": "weights/demo/sep1.pt",
              "source": "runs/kaggle_s960/runs/sep1_s960_s0/weights/last.pt"}
-  }
+  },
+  "live": {"name": "YOLO26n-OBB, ảnh 960, augment v3, train trên toàn bộ ảnh đã gán nhãn (nhẹ, ~90 ms/khung trên CPU)",
+           "weights": "weights/demo/live.pt", "source": "runs/kaggle/runs/all_v3_960/weights/last.pt", "imgsz": 960}
 }

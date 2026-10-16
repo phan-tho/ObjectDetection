@@ -176,9 +176,13 @@ def contact_dz(a, sa, b, sb, cam, up, depth, grow=1.15):
 
 def plan_image(image_path, depth_path, objects, cam_to_robot, default_dist, ignore_conf=False):
     k, dist, spec = load_meta(image_path)
-    bag_len = float(spec.get("length_mm", BAG_MM[0]))
-    cam = Camera(k, dist or default_dist)
-    depth = load_depth(depth_path)
+    return plan_frame(load_depth(depth_path), Camera(k, dist or default_dist), objects, cam_to_robot,
+                      float(spec.get("length_mm", BAG_MM[0])), ignore_conf)
+
+
+def plan_frame(depth, cam, objects, cam_to_robot, bag_len=BAG_MM[0], ignore_conf=False):
+    """Chọn bao từ depth (mm, đã khớp ảnh màu, 0 = không đo được) và box OBB của cùng khung hình.
+    Dùng chung cho ảnh đã lưu (plan_image) và khung hình lấy thẳng từ camera."""
     h, w = depth.shape
     pallets = [o for o in objects if o["class_id"] == 0]
     if not pallets:
@@ -289,8 +293,11 @@ def height_image(image_path, depth_path, plan, default_dist=None, span=300.0, sc
     """Bản đồ độ cao theo hướng "lên" của plan, tô màu: đỏ sẫm = cao nhất, xanh = thấp hơn span mm,
     đen = không có depth. Mốc 0 lấy theo phân vị 98% độ cao trong pallet mục tiêu."""
     k, dist, _ = load_meta(image_path)
-    cam = Camera(k, dist or default_dist)
-    depth = load_depth(depth_path)
+    return height_map(load_depth(depth_path), Camera(k, dist or default_dist), plan, span, scale)
+
+
+def height_map(depth, cam, plan, span=300.0, scale=0.5):
+    """Như height_image nhưng nhận thẳng depth (mm) và Camera."""
     step = int(round(1 / scale))
     ys, xs = np.mgrid[0:depth.shape[0]:step, 0:depth.shape[1]:step]
     z = depth[ys, xs]

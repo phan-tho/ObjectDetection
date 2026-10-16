@@ -24,6 +24,11 @@ import push  # noqa: E402
 from push import kaggle, use_account, username  # noqa: E402
 
 
+def entries(cfg):
+    """(tên, mục) của mọi weights: các fold, rồi model live nếu có (live là tuỳ chọn khi tải)."""
+    return list(cfg["folds"].items()) + ([("live", cfg["live"])] if "live" in cfg else [])
+
+
 def publish(cfg, account):
     if account:
         use_account(account)
@@ -31,7 +36,7 @@ def publish(cfg, account):
     slug = cfg["kaggle_dataset"].split("/")[1]
     with tempfile.TemporaryDirectory() as tmp:
         folder = Path(tmp)
-        for fold, f in cfg["folds"].items():
+        for _, f in entries(cfg):
             shutil.copy(ROOT / f["source"], folder / Path(f["weights"]).name)
         shutil.copy(CONFIG, folder / CONFIG.name)
         (folder / "dataset-metadata.json").write_text(json.dumps(
@@ -44,7 +49,7 @@ def publish(cfg, account):
     if cfg["kaggle_dataset"] != f"{owner}/{slug}":
         cfg["kaggle_dataset"] = f"{owner}/{slug}"
         CONFIG.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Đã đẩy {len(cfg['folds'])} weights -> https://www.kaggle.com/datasets/{owner}/{slug}")
+    print(f"Đã đẩy {len(entries(cfg))} weights -> https://www.kaggle.com/datasets/{owner}/{slug}")
 
 
 def run(*args):
@@ -57,12 +62,16 @@ def download(cfg, account=None):
     """Tải từng file (không cần Kaggle đóng gói xong bản zip của cả dataset)."""
     if account:
         use_account(account)
-    for f in cfg["folds"].values():
+    done = 0
+    for name, f in entries(cfg):
         dest = ROOT / f["weights"]
         dest.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory() as tmp:
             r = run("datasets", "download", cfg["kaggle_dataset"], "-f", dest.name, "-p", tmp)
             files = [p for p in Path(tmp).iterdir()]
+            if (r.returncode != 0 or not files) and name == "live":
+                print(f"  Bỏ qua {dest.name}: chưa có trên dataset (trang camera trực tiếp sẽ báo thiếu).")
+                continue
             if r.returncode != 0 or not files:
                 raise SystemExit(f"Tải {dest.name} thất bại ({cfg['kaggle_dataset']}). Kiểm tra token Kaggle và "
                                  "quyền truy cập dataset (chủ dataset cần share cho tài khoản của bạn).\n"
@@ -74,7 +83,8 @@ def download(cfg, account=None):
                 src = Path(tmp) / dest.name
             shutil.move(str(src), dest)
         print(f"  {dest.relative_to(ROOT)} ({dest.stat().st_size / 1e6:.1f} MB)")
-    print(f"Đã tải {len(cfg['folds'])} weights.")
+        done += 1
+    print(f"Đã tải {done} weights.")
 
 
 def main():
