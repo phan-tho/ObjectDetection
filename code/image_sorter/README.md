@@ -43,12 +43,12 @@ Mở lại bắt đầu ở lượt chưa phân loại đầu tiên. Dùng `Spac
 
 ## Dữ liệu và kết quả
 
-Chương trình đọc hai thư mục `bao-tai.nosync/` và `2026-09-11.nosync/`
+Chương trình đọc hai thư mục `bao-tai/` và `2026-09-11/`
 ở gốc dự án. Mỗi lượt chụp là một mục; nhãn áp dụng cho cả lượt.
 Các frame khác chỉ để kiểm tra, không đổi ảnh đại diện. Chưa có trình xem depth.
 Không tự suy ra nhãn "đầy/vơi" từ metadata cũ.
 
-Kết quả nằm trong `code/image_sorter/results.nosync/`:
+Kết quả nằm trong `code/image_sorter/results/`:
 
 - `labels.json`: kết quả gốc để chương trình đọc lại, kèm định nghĩa nhãn.
 - `labels.csv`: một dòng mỗi lượt chụp; cột nhãn là `0/1`; lượt chưa phân loại

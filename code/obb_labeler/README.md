@@ -1,4 +1,7 @@
-# Gán nhãn OBB cho 25 ảnh mẫu
+# Gán nhãn OBB
+
+25 ảnh mẫu đã xác nhận. 80 lượt còn lại đã được nạp ở dạng **nháp** (dự đoán của model, xem
+[Sửa nhãn nháp](#sửa-nhãn-nháp)).
 
 Python 3.9 trở lên, không cần cài thư viện. Chạy từ thư mục dự án:
 
@@ -61,6 +64,35 @@ khoanh xong, lưu nháp và ghi chú; chưa xác nhận ảnh để train.
 Pallet rỗng vẫn cần box pallet mục tiêu; có thể không có bao trên pallet đó.
 OBB mô tả vị trí/hướng đối tượng; không phải nhãn điểm gắp hoặc nhãn XYZ.
 
+### Quy ước khoanh (để nhãn nhất quán)
+
+mAP50-95 chấm tới IoU 0.95, nên lệch vài pixel đã bị trừ điểm. Lỗi lớn nhất hiện nay nằm ở bao bị đè.
+
+- **Cạnh box bám theo mép thân bao**: mép đường may hoặc nếp gấp ngoài cùng của phần thân căng. Không
+  lấy tai bao, góc gấp nhỏ hay bóng đổ. Khoanh ở mức zoom ≥ 2 lần.
+- **Bao bị đè**: chỉ khoanh phần thân còn thấy, là hình chữ nhật nhỏ nhất bao phần đó. Mép bị đè lấy
+  theo mép của bao nằm trên. Hướng box giữ theo hướng của bao, không theo hướng phần còn thấy. Phần
+  còn thấy dưới khoảng 25% thân bao thì không khoanh.
+- **Mọi bao thấy rõ đều khoanh**, kể cả bao ở pallet phụ và bao rời. Bao không khoanh sẽ bị model
+  học thành nền.
+- **Pallet**: gồm đế và mọi bao trên đó, kể cả bao tràn ra ngoài đế.
+
+## Sửa nhãn nháp
+
+Ảnh nháp nạp bằng `import_predictions.py` có ghi chú "Nháp từ …, chưa kiểm tra":
+
+1. Xóa box thừa (người, áo phản quang, cửa, vạch sơn) và box trùng.
+2. Thêm bao bị sót, nhất là bao nhỏ sát mép ảnh và bao bị đè.
+3. Chỉnh từng box theo quy ước trên. Model hay vẽ box bao lệch vài pixel hoặc to hơn thân bao.
+4. Kiểm tra pallet mục tiêu (tự chọn pallet gần giữa ảnh nhất) và liên kết bao → pallet.
+5. Bấm **Đã kiểm tra & tiếp**. Chỉ ảnh đã kiểm tra mới được dùng để train.
+
+Nạp thêm dự đoán từ model khác (bỏ qua ảnh đã có record, chạy lại an toàn):
+
+```sh
+.venv/Scripts/python code/obb_labeler/import_predictions.py runs/predict_<run>/predictions.json --dry-run
+```
+
 ## Lưu và xuất
 
 Thay đổi tự lưu nháp sau 0,5 giây. Đợi thông báo **Đã lưu nháp** trước khi đóng.
@@ -68,15 +100,18 @@ Mở lại sẽ bắt đầu ở ảnh chưa xác nhận đầu tiên. Mỗi ả
 đã kiểm tra riêng. Sửa một ảnh đã kiểm tra sẽ đưa ảnh về nháp và bỏ bản xuất
 YOLO dẫn xuất cho đến khi bạn xác nhận lại.
 
-Kết quả trong `code/obb_labeler/results.nosync/`:
+Kết quả trong `code/obb_labeler/results/`:
 
 - `annotations.json`: bản gốc, nháp và nhãn đã kiểm tra; lưu tâm, kích thước,
   góc, bốn góc theo pixel gốc, lớp, liên kết pallet, cờ mục tiêu và che khuất.
+  Khi lưu, box được chuẩn hóa về một dạng duy nhất (hình không đổi): `w` là cạnh
+  dài, `angle` là hướng cạnh dài trong [-90°, 90°). Vì vậy khi mở lại ảnh, ô góc
+  có thể khác số đã nhập (vd 120° với w<h thành 30° với w, h đổi chỗ).
 - `manifest.csv`: đường dẫn RGB/depth, kích thước, nhóm chuỗi, số đối tượng,
   trạng thái đã kiểm tra và ghi chú.
 - `yolo/labels/<id>.txt`: chỉ ảnh đã kiểm tra; mỗi dòng
   `class_id x1 y1 x2 y2 x3 y3 x4 y4`, tọa độ chuẩn hóa theo ảnh gốc.
-- `yolo/images/<id>.png`: symlink tới RGB gốc tương ứng, không nhân bản ảnh.
+- `yolo/images/<id>.png`: symlink tương đối tới RGB gốc tương ứng, không nhân bản ảnh.
 - `yolo/classes.yaml`: `0: pallet_region`, `1: bag`.
 - `yolo/reviewed.txt`: danh sách ảnh đã kiểm tra để chọn dữ liệu train sau này.
 

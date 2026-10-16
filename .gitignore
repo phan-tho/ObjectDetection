@@ -1,4 +1,22 @@
-img.nosync
-bao-tai.nosync
-annotations.nosync
-2026-09-11.nosync
+# Ảnh gốc / nhãn cũ (tải từ Kaggle hoặc chỉ có trên máy Mac)
+/img/
+/bao-tai/
+/annotations/
+/2026-09-11/
+
+# Dữ liệu tải từ Kaggle, file nén
+*.zip
+_download_*/
+
+# Môi trường + output train/augment
+.venv/
+/datasets/
+/runs/
+*.pt
+/weights/demo/
+*.onnx
+__pycache__/
+
+.kaggle/
+reports/
+.DS_Store

@@ -7,6 +7,7 @@ import errno
 import io
 import json
 import math
+import os
 import threading
 import webbrowser
 from datetime import datetime
@@ -17,6 +18,17 @@ from urllib.parse import parse_qs, urlparse
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 CLASSES = {"0": "pallet_region", "1": "bag"}
+
+
+def canonical(box):
+    """Một hình chữ nhật có nhiều cách ghi (30° = 210°, hoặc 120° với w/h đổi chỗ).
+    Quy ước duy nhất (long-edge, như MMRotate le90): w là cạnh dài, góc của cạnh dài
+    trong [-90°, 90°), đo theo chiều kim đồng hồ trên ảnh (trục y hướng xuống)."""
+    w, h, angle = box["w"], box["h"], box["angle"]
+    if w < h:
+        w, h, angle = h, w, angle + 90
+    angle = (angle + 90) % 180 - 90
+    return {**box, "w": w, "h": h, "angle": round(angle, 6)}
 
 
 def corners(box):
@@ -53,7 +65,7 @@ def validate(body, image):
         if parent is not None and type(parent) is not int:
             raise ValueError("Pallet liên kết không hợp lệ.")
         ids.add(box["id"])
-        item = {"id": box["id"], "class_id": box["class_id"], **geometry,
+        item = {"id": box["id"], "class_id": box["class_id"], **canonical(geometry),
                 "parent_id": parent if box["class_id"] == 1 else None,
                 "target": bool(box.get("target", False)) if box["class_id"] == 0 else False,
                 "occluded": bool(box.get("occluded", False)), "truncated": bool(box.get("truncated", False))}
@@ -80,7 +92,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8766)
     parser.add_argument("--no-browser", action="store_true")
-    parser.add_argument("--output", type=Path, default=HERE / "results.nosync")
+    parser.add_argument("--output", type=Path, default=HERE / "results")
     args = parser.parse_args()
     images = json.loads((HERE / "selection.json").read_text(encoding="utf-8"))["images"]
     by_id = {image["id"]: image for image in images}
@@ -125,9 +137,13 @@ def main():
                                   for point in corners(box) for axis, value in enumerate(point)]
                     lines.append(str(box["class_id"]) + " " + " ".join(f"{min(1, max(0, value)):.8f}" for value in normalized))
                 label_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                # Link tương đối để repo chuyển máy vẫn đúng; link cũ trỏ sai thì tạo lại.
+                target = os.path.relpath(ROOT / image["image_path"], image_path.parent)
+                if image_path.is_symlink() and os.readlink(image_path) != target:
+                    image_path.unlink()
                 if not image_path.exists() and not image_path.is_symlink():
-                    image_path.symlink_to(ROOT / image["image_path"])
-                reviewed_paths.append(str(image_path))
+                    image_path.symlink_to(target)
+                reviewed_paths.append(Path(os.path.relpath(image_path, ROOT)).as_posix())
             else:
                 # Chỉ xóa bản xuất dẫn xuất khi người dùng sửa một ảnh đã xác nhận.
                 label_path.unlink(missing_ok=True)
