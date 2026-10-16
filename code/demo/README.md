@@ -5,7 +5,8 @@
 Chọn một lượt chụp, app hiện: box pallet và bao, bao gắp trước cùng toạ độ XYZ và góc kẹp, bản đồ độ
 cao từ depth, bảng các bao kèm lý do chưa gắp được.
 
-Weights gồm 4 model, mỗi model đã được train trước (trên Kaggle) mà không dùng một nhóm chuỗi chụp.
+Weights gồm 4 model, mỗi model đã được train trước (trên Kaggle) mà không dùng một nhóm chuỗi chụp,
+và một model nhẹ `live.pt` (train trên mọi ảnh có nhãn) cho trang camera trực tiếp.
 App chạy mỗi ảnh bằng model chưa từng thấy chuỗi chụp đó (`models.json`), nên kết quả trên demo là
 kết quả thật trên cảnh mới, không phải ảnh model đã học thuộc.
 
@@ -56,8 +57,30 @@ dataset để được thêm vào (trang dataset > Settings > Sharing).
 ```sh
 .venv\Scripts\streamlit run code/demo/streamlit_app.py
 ```
-Trình duyệt mở http://localhost:8501. Lần đầu mỗi chuỗi chụp chậm hơn vài giây do nạp model, các lần
-sau được cache.
+Trình duyệt mở http://localhost:8501, vào trang **Giới thiệu** trước: giải thích hệ thống, chuỗi chụp
+là gì, các lựa chọn và cách đọc kết quả; mỗi thẻ chuỗi chụp có nút mở thẳng chuỗi đó trong trang
+**Chạy demo**. Lần đầu mỗi chuỗi chụp chậm hơn vài giây do nạp model, các lần sau được cache.
+Theme (màu, font) ở `code/demo/.streamlit/config.toml`.
+
+## Camera trực tiếp
+
+Trang **Camera trực tiếp** chạy như trên robot: xem camera liên tục (chỉ nhận diện, model nhẹ
+YOLO26n `weights/demo/live.pt`), bấm **Chụp và chọn bao** để lấy 5 khung, gộp depth bằng median, chọn
+bao và ra toạ độ gắp + JSON sẽ gửi cho robot. Bật **Chọn bao liên tục** để chọn bao trên mọi khung
+(chậm hơn ~150 ms/khung).
+
+Nguồn ảnh (chọn ở thanh bên):
+- **Camera robot (Orbbec Gemini 2)**: ảnh màu 1920×1080 + depth khớp ảnh màu, giống lúc thu dữ liệu.
+  Cần SDK, chỉ cài trên máy cắm camera (không có trong `requirements.txt`):
+  ```sh
+  .venv\Scripts\python -m pip install pyorbbecsdk2
+  ```
+  Cắm cổng USB 3, khởi động lại app. Tắt **Bật camera** để trả camera cho chương trình khác.
+- **Webcam / camera USB**: chỉ ảnh màu, chỉ nhận diện, không tính XYZ.
+- **Phát lại dữ liệu đã chụp**: phát một chuỗi chụp như camera đang chạy, để thử khi không có camera.
+
+Code camera ở `code/demo/camera.py`. Phần Orbbec chưa được chạy với camera thật (viết theo API
+pyorbbecsdk v2); lần đầu cắm camera nên kiểm tra ảnh màu, depth và toạ độ có hợp lý không.
 
 ## Gợi ý khi demo
 

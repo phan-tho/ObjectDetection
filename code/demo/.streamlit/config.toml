@@ -1,0 +1,74 @@
+# Theme của app demo (light + dark, người xem đổi được trong Settings). Đặt cạnh streamlit_app.py nên
+# có tác dụng khi chạy từ thư mục gốc repo.
+
+[theme]
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "10px"
+buttonRadius = "8px"
+font = "'Be Vietnam Pro':https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap"
+headingFont = "'Be Vietnam Pro':https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 15
+headingFontSizes = ["30px", "22px", "18px", "16px", "14px", "12px"]
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+metricValueFontSize = "1.9rem"
+metricValueFontWeight = 700
+linkUnderline = false
+paddingTop = "1rem"
+paddingBottom = "3rem"
+
+[theme.light]
+primaryColor = "#0F766E"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F5F4"
+codeBackgroundColor = "#F1F5F4"
+textColor = "#0F172A"
+linkColor = "#0F766E"
+borderColor = "#D3DCDA"
+greenColor = "#15803D"
+redColor = "#DC2626"
+yellowColor = "#CA8A04"
+orangeColor = "#EA580C"
+blueColor = "#0284C7"
+violetColor = "#7C3AED"
+dataframeBorderColor = "#D3DCDA"
+dataframeHeaderBackgroundColor = "#E6EEEC"
+dataframeHeaderTextColor = "#0F172A"
+
+[theme.dark]
+primaryColor = "#0D9488"
+backgroundColor = "#0B1416"
+secondaryBackgroundColor = "#152225"
+codeBackgroundColor = "#152225"
+textColor = "#E8F0EF"
+linkColor = "#5EEAD4"
+borderColor = "#2A3B3E"
+greenColor = "#4ADE80"
+redColor = "#F87171"
+yellowColor = "#FACC15"
+orangeColor = "#FB923C"
+blueColor = "#38BDF8"
+violetColor = "#A78BFA"
+dataframeBorderColor = "#2A3B3E"
+dataframeHeaderBackgroundColor = "#152225"
+dataframeHeaderTextColor = "#E8F0EF"
+
+[theme.sidebar]
+paddingTop = "1rem"
+
+[theme.light.sidebar]
+backgroundColor = "#F6F9F8"
+secondaryBackgroundColor = "#E6EEEC"
+textColor = "#0F172A"
+borderColor = "#D3DCDA"
+primaryColor = "#0F766E"
+linkColor = "#0F766E"
+
+[theme.dark.sidebar]
+backgroundColor = "#071012"
+secondaryBackgroundColor = "#152225"
+textColor = "#E8F0EF"
+borderColor = "#2A3B3E"
+primaryColor = "#0D9488"
+linkColor = "#5EEAD4"
